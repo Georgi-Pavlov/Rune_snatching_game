@@ -1,5 +1,15 @@
 import pygame
 import random
+import sys
+import os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 pygame.init()
 
@@ -17,25 +27,25 @@ game_state = PLAYING
 
 
 # --- images ---
-player_img = pygame.image.load("pics/Zeus.png")
-frog_img = pygame.image.load("pics/frog.png")
+player_img = pygame.image.load(resource_path("pics/Zeus.png"))
+frog_img = pygame.image.load(resource_path("pics/frog.png"))
 player_img = pygame.transform.scale(player_img, (200, 200))
 frog_img = pygame.transform.scale(frog_img, (150, 150))
 
-heart_img = pygame.image.load("pics/heart.png")
+heart_img = pygame.image.load(resource_path("pics/heart.png"))
 heart_img = pygame.transform.scale(heart_img, (40, 40))
 
 
 rune_images = {
-    "normal": pygame.transform.scale(pygame.image.load("pics/rune.png"), (70, 70)),
-    "dd": pygame.transform.scale(pygame.image.load("pics/dd.png"), (70, 70)),
-    "haste": pygame.transform.scale(pygame.image.load("pics/haste.png"), (70, 70)),
-    "regen": pygame.transform.scale(pygame.image.load("pics/regen.png"), (70, 70)),
-    "creep": pygame.transform.scale(pygame.image.load("pics/creep.png"), (85, 85)),
-    "hex": pygame.transform.scale(pygame.image.load("pics/hex.png"), (70, 70)),
-    "shield": pygame.transform.scale(pygame.image.load("pics/shield.png"), (70, 70)),
-    "water": pygame.transform.scale(pygame.image.load("pics/water.png"), (70, 70)),
-    "invisible": pygame.transform.scale(pygame.image.load("pics/invisible.png"), (70, 70)),
+    "normal": pygame.transform.scale(pygame.image.load(resource_path("pics/rune.png")), (70, 70)),
+    "dd": pygame.transform.scale(pygame.image.load(resource_path("pics/dd.png")), (70, 70)),
+    "haste": pygame.transform.scale(pygame.image.load(resource_path("pics/haste.png")), (70, 70)),
+    "regen": pygame.transform.scale(pygame.image.load(resource_path("pics/regen.png")), (70, 70)),
+    "creep": pygame.transform.scale(pygame.image.load(resource_path("pics/creep.png")), (85, 85)),
+    "hex": pygame.transform.scale(pygame.image.load(resource_path("pics/hex.png")), (70, 70)),
+    "shield": pygame.transform.scale(pygame.image.load(resource_path("pics/shield.png")), (70, 70)),
+    "water": pygame.transform.scale(pygame.image.load(resource_path("pics/water.png")), (70, 70)),
+    "invisible": pygame.transform.scale(pygame.image.load(resource_path("pics/invisible.png")), (70, 70)),
 }
 
 
@@ -56,9 +66,10 @@ max_runes = 1
 # --- effects ---
 haste_timer = 0
 hex_timer = 0
-shield = 0
+
 
 invisible = False
+shield = False
 invisible_timer = 0
 INVISIBLE_DURATION = 3000
 
@@ -172,8 +183,8 @@ while running:
                             lives = max_lives
 
                 elif rtype == "creep":
-                    if shield == 1:
-                        shield -= 1
+                    if shield:
+                        shield = False
                     else:
                         lives -= 1
 
@@ -191,8 +202,7 @@ while running:
                             lives = max_lives
 
                 elif rtype == "shield":
-                    if shield == 0:
-                        shield += 1
+                    shield = True
 
                 elif rtype == "invisible":
                     invisible = True
@@ -205,8 +215,8 @@ while running:
             if rune["rect"].top > HEIGHT:
 
                 if rune["type"] in ["normal", "dd"]:
-                    if shield == 1:
-                        shield -= 1
+                    if shield:
+                        shield = False
                     else:
                         lives -= 1
 
@@ -264,7 +274,8 @@ while running:
 
     screen.fill((30, 30, 40))
 
-    screen.blit(player_image, player)
+    if not invisible:
+        screen.blit(player_image, player)
 
     for rune in runes:
         screen.blit(rune_images[rune["type"]], rune["rect"])
@@ -276,6 +287,14 @@ while running:
     screen.blit(heart_img, (WIDTH-120, 10))
     lives_text = font.render(str(lives), True, (255,255,255))
     screen.blit(lives_text, (WIDTH-70, 15))
+
+    if invisible:
+        inv_text = font.render("INVISIBLE", True, (150, 150, 255))
+        screen.blit(inv_text, (WIDTH - 220, 50))
+
+    if shield:
+        inv_text = font.render("SHIELD", True, (150, 150, 255))
+        screen.blit(inv_text, (WIDTH - 220, 50))
 
 
     if game_state == GAME_OVER:
