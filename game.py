@@ -1,103 +1,263 @@
 import pygame
 import random
-import sys
 
 pygame.init()
 
-width = 1000
-height = 700
-window = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Rune Snatch")
+WIDTH, HEIGHT = 1000, 700
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Rune Catcher")
 
-player_image = pygame.image.load("pics/Zeus.png")
-player_image = pygame.transform.smoothscale(player_image, (200,200))
-players_size = player_image.get_rect().size
-player_x = width // 2 - players_size[0] // 2
-player_y = height - players_size[1] - 10
-player_speed = 5
+clock = pygame.time.Clock()
+font = pygame.font.SysFont(None, 36)
+big_font = pygame.font.SysFont(None, 90)
 
-item_image = pygame.image.load("pics/rune.png")
-item_image = pygame.transform.smoothscale(item_image, (80, 80))
-item_size = item_image.get_rect().size
-item_x = random.randint(0, width - item_size[0])
-item_y= -item_size[1]
-item_speed = 3
+PLAYING = 1
+GAME_OVER = 2
+game_state = PLAYING
 
-score = 0
-update = 0
-font = pygame.font.Font(None, 36)
 
-game_over_font = pygame.font.Font(None, 72)
-game_over_text = game_over_font.render("GAME OVER", True, (0, 0, 255))
-game_over_text_pos = (width // 2 - game_over_text.get_width() // 2, height // 2 - game_over_text.get_height() // 2)
+# --- images ---
+player_img = pygame.image.load("pics/Zeus.png")
+frog_img = pygame.image.load("pics/frog.png")
+player_img = pygame.transform.scale(player_img, (200, 200))
+frog_img = pygame.transform.scale(frog_img, (150, 150))
 
-button_font = pygame.font.Font(None, 36)
-button_text = button_font.render("New game", True, (255, 255, 255))
-button_text_pos = (width // 2 - button_text.get_width() // 2, height // 2 + button_text.get_height() // 2)
-button_rect = pygame.Rect(button_text_pos[0], button_text_pos[1], button_text.get_width(), button_text.get_height())
+heart_img = pygame.image.load("pics/heart.png")
+heart_img = pygame.transform.scale(heart_img, (40, 40))
 
-STATE_PLAYING = 1
-STATE_GAME_OVER = 2
-state = STATE_PLAYING
+rune_images = {
+    "normal": pygame.transform.scale(pygame.image.load("pics/rune.png"), (70, 70)),
+    "dd": pygame.transform.scale(pygame.image.load("pics/dd.png"), (70, 70)),
+    "haste": pygame.transform.scale(pygame.image.load("pics/haste.png"), (70, 70)),
+    "regen": pygame.transform.scale(pygame.image.load("pics/regen.png"), (70, 70)),
+    "creep": pygame.transform.scale(pygame.image.load("pics/creep.png"), (85, 85)),
+    "hex": pygame.transform.scale(pygame.image.load("pics/hex.png"), (70, 70)),
+}
+
+
+# --- player ---
+player = pygame.Rect(WIDTH // 2, HEIGHT - 190, 200, 200)
+player_speed = 6
+base_speed = 6
+player_image = player_img
+
+
+# --- stats ---
+gold = 0
+lives = 10
+max_lives = 10
+max_runes = 1
+
+
+# --- effects ---
+haste_timer = 0
+hex_timer = 0
+
+
+# --- rune ---
+rune_speed = 3
+
+rune_weights = {
+    "normal": 50,
+    "dd": 20,
+    "creep": 20,
+    "haste": 3,
+    "regen": 4,
+    "hex": 3
+}
+
+
+def spawn_rune():
+    rtype = random.choices(
+        list(rune_weights.keys()),
+        weights=rune_weights.values()
+    )[0]
+
+    img = rune_images[rtype]
+    rect = img.get_rect()
+    rect.x = random.randint(0, WIDTH - rect.width)
+    rect.y = -rect.height
+    return {"type": rtype, "rect": rect}
+
+
+def reset_game():
+    global gold, lives, rune_speed, base_speed, player_speed, max_runes
+    global runes, player, player_image, haste_timer, hex_timer, game_state
+
+    gold = 0
+    lives = 10
+    rune_speed = 3
+    base_speed = 6
+    player_speed = 6
+    max_runes = 1
+
+    player.x = WIDTH // 2
+    player_image = player_img
+
+    haste_timer = 0
+    hex_timer = 0
+
+    runes = [spawn_rune()]
+    game_state = PLAYING
+
+
+runes = [spawn_rune()]
+
+button_rect = pygame.Rect(WIDTH//2-120, HEIGHT//2+50, 240, 70)
 
 running = True
-clock = pygame.time.Clock()
 
 while running:
+
+    dt = clock.tick(60)
+
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if state == STATE_GAME_OVER and button_rect.collidepoint(event.pos):
-                state = STATE_PLAYING
-                score = 0
-                item_speed = 3
-                player_x = width // 2 - players_size[0] // 2
-                item_x = random.randint(0, width - item_size[0])
-                item_y = -item_size[1]
 
-    if state == STATE_PLAYING:
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and player_x > 0:
-            player_x -= player_speed
-        if keys[pygame.K_RIGHT] and player_x < width - players_size[0]:
-            player_x += player_speed
+        if game_state == GAME_OVER:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_rect.collidepoint(event.pos):
+                    reset_game()
 
-        item_y += item_speed
 
-        player_rect = pygame.Rect(player_x, player_y, players_size[0], players_size[1])
-        item_rect = pygame.Rect(item_x, item_y, item_size[0], item_size[1])
+    keys = pygame.key.get_pressed()
 
-        if player_rect.colliderect(item_rect):
-            score += 50
-            update += 1
-            item_x = random.randint(0, width - item_size[0])
-            item_y = -item_size[1]
+    if game_state == PLAYING:
 
-            if update % 5 == 0:
-                item_speed += 1
+        if keys[pygame.K_LEFT] and player.left > 0:
+            player.x -= player_speed
+        if keys[pygame.K_RIGHT] and player.right < WIDTH:
+            player.x += player_speed
 
-        if item_y > height:
-            state = STATE_GAME_OVER
 
-    window.fill((30, 30, 40))
+        # rune falling
+        for rune in runes:
+            rune["rect"].y += rune_speed
 
-    window.blit(player_image, (player_x, player_y))
 
-    window.blit(item_image, (item_x, item_y))
+        for rune in runes[:]:
 
-    score_text = font.render("You got: " + str(score) + "gold", True, (255, 255, 255))
-    window.blit(score_text, (10, 10))
+            if player.colliderect(rune["rect"]):
 
-    if state == STATE_GAME_OVER:
-        window.blit(game_over_text, game_over_text_pos)
+                rtype = rune["type"]
 
-        pygame.draw.rect(window, (0, 0, 255), button_rect)
-        window.blit(button_text, button_text_pos)
+                if rtype == "normal":
+                    gold += 50
 
-    pygame.display.update()
+                elif rtype == "dd":
+                    gold += 100
 
-    clock.tick(60)
+                elif rtype == "haste":
+                    player_speed = base_speed * 2
+                    haste_timer = pygame.time.get_ticks()
+
+                elif rtype == "regen":
+                    if lives < max_lives:
+                        lives += 1
+
+                elif rtype == "creep":
+                    lives -= 1
+
+                elif rtype == "hex":
+                    player_speed = base_speed // 2
+                    player_image = frog_img
+                    hex_timer = pygame.time.get_ticks()
+
+                runes.remove(rune)
+                continue
+
+
+            if rune["rect"].top > HEIGHT:
+
+                if rune["type"] in ["normal", "dd"]:
+                    lives -= 1
+
+                runes.remove(rune)
+
+
+        while len(runes) < max_runes:
+            runes.append(spawn_rune())
+
+
+        if gold >= 1000:
+            max_runes = 2
+
+        if gold >= 2500:
+            max_runes = 3
+
+        if gold >= 5000:
+            max_runes = 4
+
+
+        if gold >= 500 and rune_speed == 3:
+            rune_speed = 5
+            base_speed += 1
+            player_speed = base_speed
+
+        if gold >= 1500 and rune_speed == 5:
+            rune_speed = 7
+            base_speed += 1
+            player_speed = base_speed
+
+        if gold >= 3000 and rune_speed == 7:
+            rune_speed = 9
+            base_speed += 1
+            player_speed = base_speed
+
+
+        if haste_timer:
+            if pygame.time.get_ticks() - haste_timer > 5000:
+                player_speed = base_speed
+                haste_timer = 0
+
+
+        if hex_timer:
+            if pygame.time.get_ticks() - hex_timer > 5000:
+                player_speed = base_speed
+                player_image = player_img
+                hex_timer = 0
+
+
+        if lives <= 0:
+            game_state = GAME_OVER
+
+
+    screen.fill((30, 30, 40))
+
+    screen.blit(player_image, player)
+
+    for rune in runes:
+        screen.blit(rune_images[rune["type"]], rune["rect"])
+
+
+    gold_text = font.render(f"Gold: {gold}", True, (255,255,0))
+    screen.blit(gold_text, (10,10))
+
+    screen.blit(heart_img, (WIDTH-120, 10))
+    lives_text = font.render(str(lives), True, (255,255,255))
+    screen.blit(lives_text, (WIDTH-70, 15))
+
+
+    if game_state == GAME_OVER:
+
+        text = big_font.render("GAME OVER", True, (220,50,50))
+        screen.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - 120))
+
+        pygame.draw.rect(screen, (70,70,70), button_rect)
+        pygame.draw.rect(screen, (200,200,200), button_rect, 3)
+
+        play_text = font.render("PLAY AGAIN", True, (255,255,255))
+        screen.blit(
+            play_text,
+            (
+                button_rect.centerx - play_text.get_width()//2,
+                button_rect.centery - play_text.get_height()//2
+            )
+        )
+
+
+    pygame.display.flip()
 
 pygame.quit()
-sys.exit()
