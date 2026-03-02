@@ -25,6 +25,7 @@ frog_img = pygame.transform.scale(frog_img, (150, 150))
 heart_img = pygame.image.load("pics/heart.png")
 heart_img = pygame.transform.scale(heart_img, (40, 40))
 
+
 rune_images = {
     "normal": pygame.transform.scale(pygame.image.load("pics/rune.png"), (70, 70)),
     "dd": pygame.transform.scale(pygame.image.load("pics/dd.png"), (70, 70)),
@@ -32,6 +33,9 @@ rune_images = {
     "regen": pygame.transform.scale(pygame.image.load("pics/regen.png"), (70, 70)),
     "creep": pygame.transform.scale(pygame.image.load("pics/creep.png"), (85, 85)),
     "hex": pygame.transform.scale(pygame.image.load("pics/hex.png"), (70, 70)),
+    "shield": pygame.transform.scale(pygame.image.load("pics/shield.png"), (70, 70)),
+    "water": pygame.transform.scale(pygame.image.load("pics/water.png"), (70, 70)),
+    "invisible": pygame.transform.scale(pygame.image.load("pics/invisible.png"), (70, 70)),
 }
 
 
@@ -52,18 +56,25 @@ max_runes = 1
 # --- effects ---
 haste_timer = 0
 hex_timer = 0
+shield = 0
 
+invisible = False
+invisible_timer = 0
+INVISIBLE_DURATION = 3000
 
 # --- rune ---
 rune_speed = 3
 
 rune_weights = {
-    "normal": 50,
-    "dd": 20,
-    "creep": 20,
+    "normal": 40,
+    "dd": 15,
+    "creep": 25,
+    "regen": 3,
+    "water": 4,
     "haste": 3,
-    "regen": 4,
-    "hex": 3
+    "hex": 3,
+    "shield": 4,
+    "invisible": 2
 }
 
 
@@ -155,15 +166,37 @@ while running:
 
                 elif rtype == "regen":
                     if lives < max_lives:
-                        lives += 1
+                        if lives + 3 <= max_lives:
+                            lives += 3
+                        else:
+                            lives = max_lives
 
                 elif rtype == "creep":
-                    lives -= 1
+                    if shield == 1:
+                        shield -= 1
+                    else:
+                        lives -= 1
+
 
                 elif rtype == "hex":
                     player_speed = base_speed // 2
                     player_image = frog_img
                     hex_timer = pygame.time.get_ticks()
+
+                elif rtype == "water":
+                    if lives < max_lives:
+                        if lives + 1 <= max_lives:
+                            lives += 1
+                        else:
+                            lives = max_lives
+
+                elif rtype == "shield":
+                    if shield == 0:
+                        shield += 1
+
+                elif rtype == "invisible":
+                    invisible = True
+                    invisible_timer = pygame.time.get_ticks()
 
                 runes.remove(rune)
                 continue
@@ -172,7 +205,10 @@ while running:
             if rune["rect"].top > HEIGHT:
 
                 if rune["type"] in ["normal", "dd"]:
-                    lives -= 1
+                    if shield == 1:
+                        shield -= 1
+                    else:
+                        lives -= 1
 
                 runes.remove(rune)
 
@@ -219,6 +255,8 @@ while running:
                 player_image = player_img
                 hex_timer = 0
 
+        if invisible and pygame.time.get_ticks() - invisible_timer > INVISIBLE_DURATION:
+            invisible = False
 
         if lives <= 0:
             game_state = GAME_OVER
