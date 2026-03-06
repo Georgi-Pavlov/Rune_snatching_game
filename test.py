@@ -69,15 +69,15 @@ frog_img = pygame.transform.scale(pygame.image.load(resource_path("pics/frog.png
 heart_img = pygame.transform.scale(pygame.image.load(resource_path("pics/heart.png")), (40, 40))
 
 rune_images = {
-    "normal": pygame.transform.scale(pygame.image.load(resource_path("pics/rune.png")), (70, 70)),
-    "dd": pygame.transform.scale(pygame.image.load(resource_path("pics/dd.png")), (70, 70)),
-    "haste": pygame.transform.scale(pygame.image.load(resource_path("pics/haste.png")), (70, 70)),
-    "regen": pygame.transform.scale(pygame.image.load(resource_path("pics/regen.png")), (70, 70)),
-    "creep": pygame.transform.scale(pygame.image.load(resource_path("pics/creep.png")), (85, 85)),
-    "hex": pygame.transform.scale(pygame.image.load(resource_path("pics/hex.png")), (70, 70)),
-    "shield": pygame.transform.scale(pygame.image.load(resource_path("pics/shield.png")), (70, 70)),
-    "water": pygame.transform.scale(pygame.image.load(resource_path("pics/water.png")), (70, 70)),
-    "invisible": pygame.transform.scale(pygame.image.load(resource_path("pics/invisible.png")), (70, 70)),
+    "normal": pygame.transform.scale(pygame.image.load(resource_path("pics/rune.png")), (60, 60)),
+    "dd": pygame.transform.scale(pygame.image.load(resource_path("pics/dd.png")), (60, 60)),
+    "haste": pygame.transform.scale(pygame.image.load(resource_path("pics/haste.png")), (60, 60)),
+    "regen": pygame.transform.scale(pygame.image.load(resource_path("pics/regen.png")), (60, 60)),
+    "creep": pygame.transform.scale(pygame.image.load(resource_path("pics/creep.png")), (80, 80)),
+    "hex": pygame.transform.scale(pygame.image.load(resource_path("pics/hex.png")), (60, 60)),
+    "shield": pygame.transform.scale(pygame.image.load(resource_path("pics/shield.png")), (60, 60)),
+    "water": pygame.transform.scale(pygame.image.load(resource_path("pics/water.png")), (60, 60)),
+    "invisible": pygame.transform.scale(pygame.image.load(resource_path("pics/invisible.png")), (60, 60))
 }
 
 # --- Game Variables ---
@@ -130,7 +130,12 @@ def spawn_rune():
 
 def reset_game(to_menu=False):
     global gold, lives, rune_speed, base_speed, player_speed, max_runes, runes, player_image, game_state, shield, invisible
-    gold, lives, rune_speed, base_speed, player_speed, max_runes = 0, 10, 3, 6, 6, 1
+    gold = 0
+    lives = 10
+    rune_speed = 3
+    base_speed = 6
+    player_speed = 6
+    max_runes = 1
     shield = invisible = False
     player.x = WIDTH // 2
     runes = [spawn_rune()]
@@ -212,7 +217,9 @@ while running:
                                 lives += 3
                                 add_floating_text(f"+3 HP", rune["rect"].centerx, rune["rect"].centery, (80, 255, 120))
                             else:
+                                missing_lives = max_lives - lives
                                 lives = max_lives
+                                add_floating_text(f"+{missing_lives} HP", rune["rect"].centerx, rune["rect"].centery, (80, 255, 120))
 
 
                     elif rtype == "creep":
@@ -277,6 +284,11 @@ while running:
 
                 if gold >= 5000:
                     max_runes = 4
+
+                if gold >= 300 and rune_speed == 3:
+                    rune_speed += 1
+                    base_speed += 0.5
+                    player_speed = base_speed
 
                 if gold >= 500 and rune_speed == 3:
                     rune_speed += 2
