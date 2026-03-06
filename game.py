@@ -61,6 +61,7 @@ gold = 0
 lives = 10
 max_lives = 10
 max_runes = 1
+floating_texts = []
 
 
 # --- effects ---
@@ -87,6 +88,16 @@ rune_weights = {
     "shield": 4,
     "invisible": 2
 }
+
+
+def add_floating_text(text, x, y, color=(255,255,0)):
+    floating_texts.append({
+        "text": text,
+        "x": x,
+        "y": y,
+        "timer": 60,
+        "color": color
+    })
 
 
 def spawn_rune():
@@ -167,9 +178,11 @@ while running:
 
                 if rtype == "normal":
                     gold += 50
+                    add_floating_text("+50", rune["rect"].centerx, rune["rect"].centery)
 
                 elif rtype == "dd":
                     gold += 100
+                    add_floating_text("+100", rune["rect"].centerx, rune["rect"].centery)
 
                 elif rtype == "haste":
                     player_speed = base_speed * 2
@@ -179,14 +192,17 @@ while running:
                     if lives < max_lives:
                         if lives + 3 <= max_lives:
                             lives += 3
+                            add_floating_text(f"+3 HP", rune["rect"].centerx, rune["rect"].centery, (80, 255, 120))
                         else:
                             lives = max_lives
+
 
                 elif rtype == "creep":
                     if shield:
                         shield = False
                     else:
                         lives -= 1
+                        add_floating_text("-1 HP", rune["rect"].centerx, rune["rect"].centery, (255, 80, 80))
 
 
                 elif rtype == "hex":
@@ -198,8 +214,10 @@ while running:
                     if lives < max_lives:
                         if lives + 1 <= max_lives:
                             lives += 1
+                            add_floating_text("+1 HP", rune["rect"].centerx, rune["rect"].centery, (80, 200, 255))
                         else:
                             lives = max_lives
+
 
                 elif rtype == "shield":
                     shield = True
@@ -219,8 +237,16 @@ while running:
                         shield = False
                     else:
                         lives -= 1
+                        add_floating_text("-1 HP", rune["rect"].centerx, HEIGHT - 120, (255, 80, 80))
 
                 runes.remove(rune)
+
+        for ft in floating_texts[:]:
+            ft["y"] -= 1
+            ft["timer"] -= 1
+
+            if ft["timer"] <= 0:
+                floating_texts.remove(ft)
 
 
         while len(runes) < max_runes:
@@ -280,6 +306,9 @@ while running:
     for rune in runes:
         screen.blit(rune_images[rune["type"]], rune["rect"])
 
+    for ft in floating_texts:
+        text_surface = font.render(ft["text"], True, ft["color"])
+        screen.blit(text_surface, (ft["x"], ft["y"]))
 
     gold_text = font.render(f"Gold: {gold}", True, (255,255,0))
     screen.blit(gold_text, (10,10))
