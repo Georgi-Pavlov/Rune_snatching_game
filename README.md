@@ -1,7 +1,10 @@
 # Rune_snatching_game
 Catch the rune before it falls
 
-<img width="500" height="300" alt="image" src="https://github.com/user-attachments/assets/5eaf642e-effc-45bc-a62f-49086a4506aa" />
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0e9867a2-2869-4386-97f8-1e21fcbd5ec1" /><img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/b99db901-77e4-45ec-a64a-0f63ed1d9419" /><img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/5a7ba797-1c0b-48ce-8ad7-8e11281b429e" />
+
+
+
 
 Instructions:
 The point of the game is to catch the "gold" rune <img width="80" height="80" alt="rune" src="https://github.com/user-attachments/assets/7f288f77-281e-4d97-8747-be6d3917c585" /> and the "double damage" rune <img width="80" height="80" alt="dd" src="https://github.com/user-attachments/assets/4501ef85-ac20-4e22-a88c-c8af8b28c35b" />
