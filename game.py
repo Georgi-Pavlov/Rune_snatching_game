@@ -20,7 +20,14 @@ pygame.display.set_caption("Rune Catcher")
 
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 24)
-big_font = pygame.font.SysFont(None, 90)
+title_font = pygame.font.SysFont("timesnewroman", 80, bold=True)
+
+menu_background = pygame.image.load(resource_path("pics/hero_select_background.png"))
+menu_background = pygame.transform.scale(menu_background, (WIDTH, HEIGHT))
+
+menu_overlay = pygame.Surface((WIDTH, HEIGHT))
+menu_overlay.fill((0,0,0))
+menu_overlay.set_alpha(90)
 
 # --- States ---
 MENU = 0
@@ -48,6 +55,26 @@ HEROES = {
     "Warlock": "pics/warlock.png",
     "Witch Doctor": "pics/witch_doctor.png"
 }
+
+hero_backgrounds = {}
+
+for name in HEROES:
+    filename = name.lower().replace(" ", "_") + "_background.png"
+    path = f"pics/{filename}"
+
+    try:
+        bg = pygame.image.load(resource_path(path))
+        bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
+
+        dim = pygame.Surface((WIDTH, HEIGHT))
+        dim.fill((0,0,0))
+        dim.set_alpha(140)
+
+        bg.blit(dim, (0,0))
+
+        hero_backgrounds[name] = bg
+    except:
+        hero_backgrounds[name] = None
 
 # Pre-load icons (small) and full-size (large) images
 hero_icons = {}
@@ -92,8 +119,11 @@ floating_texts = []
 haste_timer = hex_timer = invisible_timer = 0
 invisible = shield = False
 INVISIBLE_DURATION = 3000
-
+selected_hero = None
 rune_speed = 3
+embers = []
+shake_timer = 0
+shake_strength = 0
 
 rune_weights = {"normal": 40,
                 "dd": 15,
@@ -106,9 +136,20 @@ rune_weights = {"normal": 40,
                 "invisible": 2
                 }
 
+status_font = pygame.font.SysFont(None, 20)
+
 # --- Buttons ---
 retry_btn = pygame.Rect(WIDTH // 2 - 120, HEIGHT // 2 + 20, 240, 60)
 menu_btn = pygame.Rect(WIDTH // 2 - 120, HEIGHT // 2 + 100, 240, 60)
+
+
+def spawn_ember():
+    embers.append({
+        "x": random.randint(0, WIDTH),
+        "y": random.randint(-50, -10),
+        "speed": random.uniform(1, 3),
+        "size": random.randint(2,4)
+    })
 
 
 def add_floating_text(text, x, y, color=(255,255,0)):
@@ -148,7 +189,8 @@ def reset_game(to_menu=False):
 
 running = True
 while running:
-    screen.fill((30, 30, 40))
+    screen.blit(menu_background, (0,0))
+    screen.blit(menu_overlay, (0,0))
     mx, my = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
@@ -163,6 +205,7 @@ while running:
                 if rect.collidepoint(event.pos):
                     original_player_img = hero_full[name]
                     player_image = original_player_img
+                    selected_hero = name
                     reset_game(False)
 
         if game_state == GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
@@ -170,16 +213,42 @@ while running:
             if menu_btn.collidepoint(event.pos): reset_game(True)
 
     if game_state == MENU:
-        title = big_font.render("SELECT YOUR HERO", True, (255, 255, 255))
+        title = title_font.render("CHOOSE YOUR HERO", True, (255, 180, 60))
+        shadow = title_font.render("CHOOSE YOUR HERO", True, (0, 0, 0))
+
+        screen.blit(shadow, (WIDTH // 2 - title.get_width() // 2 + 4, 44))
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
         cols = 3
+
+        if random.random() < 0.2:
+            spawn_ember()
+
+        for e in embers[:]:
+            e["y"] += e["speed"]
+
+            if e["y"] > HEIGHT:
+                embers.remove(e)
+
         for i, name in enumerate(HEROES.keys()):
             col, row = i % cols, i // cols
             btn_rect = pygame.Rect(100 + (col * 280), 140 + (row * 55), 260, 45)
 
-            # Hover effect
-            color = (70, 180, 70) if btn_rect.collidepoint((mx, my)) else (50, 130, 50)
-            pygame.draw.rect(screen, color, btn_rect, border_radius=8)
+            # Hero select buttons
+            panel = pygame.Surface((btn_rect.width, btn_rect.height), pygame.SRCALPHA)
+
+            if btn_rect.collidepoint((mx, my)):
+                panel.fill((120, 70, 20, 200))
+            else:
+                panel.fill((20, 20, 20, 180))
+
+            screen.blit(panel, btn_rect.topleft)
+
+            pygame.draw.rect(screen, (200, 150, 80), btn_rect, 2, border_radius=6)
+
+            if btn_rect.collidepoint((mx, my)):
+                glow = pygame.Surface((btn_rect.width + 8, btn_rect.height + 8), pygame.SRCALPHA)
+                pygame.draw.rect(glow, (255, 120, 40, 80), glow.get_rect(), border_radius=8)
+                screen.blit(glow, (btn_rect.x - 4, btn_rect.y - 4))
 
             # Draw Preview Icon
             screen.blit(hero_icons[name], (btn_rect.x + 5, btn_rect.y + 2))
@@ -187,12 +256,23 @@ while running:
             txt = font.render(name, True, (255, 255, 255))
             screen.blit(txt, (btn_rect.x + 55, btn_rect.centery - txt.get_height() // 2))
 
+            for e in embers:
+                pygame.draw.circle(screen, (255, 120, 40), (int(e["x"]), int(e["y"])), e["size"])
+
+
     elif game_state in [PLAYING, GAME_OVER]:
         # --- Gameplay Logic ---
         if game_state == PLAYING:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] and player.left > 0: player.x -= player_speed
             if keys[pygame.K_RIGHT] and player.right < WIDTH: player.x += player_speed
+
+            hero_bg = hero_backgrounds.get(selected_hero)
+
+            if hero_bg:
+                screen.blit(hero_bg, (0, 0))
+            else:
+                screen.fill((30, 30, 40))
 
             for rune in runes: rune["rect"].y += rune_speed
             for rune in runes[:]:
@@ -227,6 +307,8 @@ while running:
                             shield = False
                         else:
                             lives -= 1
+                            shake_timer = 10
+                            shake_strength = 6
                             add_floating_text("-1 HP", rune["rect"].centerx, rune["rect"].centery, (255, 80, 80))
 
 
@@ -261,6 +343,8 @@ while running:
                             shield = False
                         else:
                             lives -= 1
+                            shake_timer = 10
+                            shake_strength = 6
                             add_floating_text("-1 HP", rune["rect"].centerx, HEIGHT - 120, (255, 80, 80))
 
                     runes.remove(rune)
@@ -326,8 +410,15 @@ while running:
         if not invisible:
             screen.blit(player_image, player)
 
+        offset_x = offset_y = 0
+
         for r in runes:
             screen.blit(rune_images[r["type"]], r["rect"])
+
+        if shake_timer > 0:
+            offset_x = random.randint(-shake_strength, shake_strength)
+            offset_y = random.randint(-shake_strength, shake_strength)
+            shake_timer -= 1
 
         for ft in floating_texts:
             text_surface = font.render(ft["text"], True, ft["color"])
@@ -336,21 +427,47 @@ while running:
         # UI
         screen.blit(font.render(f"Gold: {gold}", True, (255, 255, 0)), (10, 10))
         screen.blit(heart_img, (WIDTH - 120, 10))
+        pygame.draw.line(screen, (120, 120, 120), (WIDTH - 260, 55), (WIDTH - 0, 55), 1)
         screen.blit(font.render(str(lives), True, (255, 255, 255)), (WIDTH - 70, 18))
+        screen.blit(rune_images[r["type"]], (r["rect"].x + offset_x, r["rect"].y + offset_y))
+        if not invisible:
+            screen.blit(player_image, (player.x + offset_x, player.y + offset_y))
 
-        if invisible:
-            inv_text = font.render("INVISIBLE", True, (150, 150, 255))
-            screen.blit(inv_text, (WIDTH - 220, 50))
+        statuses = [
+            ("SHIELD", shield, None, 0),
+            ("INVIS", invisible, invisible_timer, INVISIBLE_DURATION),
+            ("HASTED", haste_timer != 0, haste_timer, 5000),
+            ("HEXED", hex_timer != 0, hex_timer, 5000)
+        ]
 
-        if shield:
-            inv_text = font.render("SHIELD", True, (150, 150, 255))
-            screen.blit(inv_text, (WIDTH - 220, 50))
+        start_x = WIDTH - 260
+        y = 60
+
+        for name, active, timer, duration in statuses:
+
+            color = (220, 220, 220) if active else (90, 90, 90)
+
+            text = status_font.render(name, True, color)
+            screen.blit(text, (start_x, y))
+
+            if active and timer:
+                remaining = max(0, duration - (pygame.time.get_ticks() - timer))
+                seconds = int(remaining / 1000)
+
+                timer_text = status_font.render(str(seconds), True, (255, 200, 120))
+                screen.blit(timer_text, (start_x + 10, y + 18))
+
+                glow = status_font.render(name, True, (255, 180, 80))
+                screen.blit(glow, (start_x, y))
+
+            start_x += 70
+
 
         if game_state == GAME_OVER:
             s = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
             s.fill((0, 0, 0, 180))
             screen.blit(s, (0, 0))
-            msg = big_font.render("GAME OVER", True, (255, 50, 50))
+            msg = title_font.render("GAME OVER", True, (255, 50, 50))
             screen.blit(msg, (WIDTH // 2 - msg.get_width() // 2, HEIGHT // 2 - 100))
 
             for btn, label in [(retry_btn, "RETRY"), (menu_btn, "CHANGE HERO")]:
