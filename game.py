@@ -374,20 +374,28 @@ while running:
                     base_speed += 0.5
                     player_speed = base_speed
 
-                if gold >= 500 and rune_speed == 3:
-                    rune_speed += 2
-                    base_speed += 1.5
+                if gold >= 500 and rune_speed == 4:
+                    rune_speed += 1
+                    base_speed += 0.5
                     player_speed = base_speed
 
                 if gold >= 1500 and rune_speed == 5:
-                    rune_speed += 2
-                    base_speed += 1.5
+                    rune_speed += 1
+                    base_speed += 0.5
                     player_speed = base_speed
 
-                if gold >= 3000 and rune_speed == 7:
-                    rune_speed += 2
-                    base_speed += 1.5
+                if gold >= 3000 and rune_speed == 6:
+                    rune_speed += 1
+                    base_speed += 0.5
                     player_speed = base_speed
+
+                if gold >= 6000 and rune_speed == 7:
+                    rune_speed += 1
+                    base_speed += 0.5
+                    player_speed = base_speed
+
+                if gold >= 10000 and rune_speed == 8:
+                    rune_speed += 1
 
             # Timers
             if haste_timer:
