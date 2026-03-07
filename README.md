@@ -7,6 +7,7 @@ Catch the rune before it falls
 
 
 Instructions:
+
 The point of the game is to catch the "gold" rune <img width="80" height="80" alt="rune" src="https://github.com/user-attachments/assets/7f288f77-281e-4d97-8747-be6d3917c585" /> and the "double damage" rune <img width="80" height="80" alt="dd" src="https://github.com/user-attachments/assets/4501ef85-ac20-4e22-a88c-c8af8b28c35b" />
 
 The "gold" rune gives you 50 gold and the "double damage" rune gives you 100 gold.
