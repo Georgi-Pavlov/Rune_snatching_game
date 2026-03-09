@@ -17,9 +17,6 @@ pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 
 pygame.mixer.init()
-pygame.mixer.music.load(resource_path("sounds/hero_select.wav"))
-pygame.mixer.music.set_volume(0.4)
-pygame.mixer.music.play(-1)
 
 WIDTH, HEIGHT = 1000, 700
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -29,8 +26,14 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 24)
 title_font = pygame.font.SysFont("timesnewroman", 80, bold=True)
 
-menu_background = pygame.image.load(resource_path("pics/hero_select_background.png"))
-menu_background = pygame.transform.scale(menu_background, (WIDTH, HEIGHT))
+hero_select = pygame.image.load(resource_path("pics/hero_select_background.png"))
+hero_select = pygame.transform.scale(hero_select, (WIDTH, HEIGHT))
+
+main_menu_bg = pygame.image.load(resource_path("pics/main_menu.png")).convert()
+main_menu_bg = pygame.transform.scale(main_menu_bg, (WIDTH, HEIGHT))
+
+how_to_play_bg = pygame.image.load(resource_path("pics/how_to_play.png")).convert()
+how_to_play_bg = pygame.transform.scale(how_to_play_bg, (WIDTH, HEIGHT))
 
 menu_overlay = pygame.Surface((WIDTH, HEIGHT))
 menu_overlay.fill((0, 0, 0))
@@ -42,10 +45,12 @@ damage_flash_alpha = 0
 damage_flash.set_alpha(damage_flash_alpha)
 
 # --- States ---
-MENU = 0
-PLAYING = 1
-GAME_OVER = 2
-game_state = MENU
+MAIN_MENU = 0
+HERO_SELECT = 1
+HOW_TO_PLAY = 2
+PLAYING = 3
+GAME_OVER = 4
+game_state = MAIN_MENU
 
 # --- Hero Data ---
 HEROES = {
@@ -119,6 +124,18 @@ rune_images = {
     "invisible": pygame.transform.scale(pygame.image.load(resource_path("pics/invisible.png")), (60, 60))
 }
 
+rune_data = {
+    "normal": "Gold rune: +50 gold if you catch it, or -1hp if you dont",
+    "dd": "Double Damage rune: +100 gold if you catch it, or -1hp if you dont",
+    "haste": "Haste rune: double movement speed",
+    "regen": "Regeneration rune: restore up to 3HP",
+    "creep": "Enemy creep: damages you",
+    "hex": "Hex rune: turns you into slow frog",
+    "shield": "Shield rune: blocks next hit",
+    "water": "Water rune: +1 HP",
+    "invisible": "Invisibility rune: you become invisible"
+}
+
 # Sounds
 
 sounds = {
@@ -134,7 +151,8 @@ sounds = {
     "block": pygame.mixer.Sound(resource_path("sounds/block.ogg")),
     "hex": pygame.mixer.Sound(resource_path("sounds/hex.wav")),
     "haste": pygame.mixer.Sound(resource_path("sounds/haste.ogg")),
-    "invisible": pygame.mixer.Sound(resource_path("sounds/invisible.ogg"))
+    "invisible": pygame.mixer.Sound(resource_path("sounds/invisible.ogg")),
+    "main_menu": pygame.mixer.Sound(resource_path("sounds/main_menu.ogg"))
 }
 
 for s in sounds.values():
@@ -161,6 +179,7 @@ multiplier = 1
 consecutive_runes = 0
 last_hovered_hero = None
 game_over_played = False
+last_hovered_button = None
 
 rune_weights = {"normal": 40,
                 "dd": 15,
@@ -179,6 +198,16 @@ status_font = pygame.font.SysFont(None, 20)
 retry_btn = pygame.Rect(WIDTH // 2 - 120, HEIGHT // 2 + 20, 240, 60)
 menu_btn = pygame.Rect(WIDTH // 2 - 120, HEIGHT // 2 + 100, 240, 60)
 
+how_to_play_btn = pygame.Rect(60, HEIGHT - 90, 260, 55)
+choose_hero_btn = pygame.Rect(WIDTH - 320, HEIGHT - 90, 260, 55)
+
+back_btn = pygame.Rect(40, 40, 120, 50)
+
+def play_music(file):
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(resource_path(file))
+    pygame.mixer.music.set_volume(0.4)
+    pygame.mixer.music.play(-1)
 
 def update_multiplier():
     global multiplier
@@ -239,24 +268,141 @@ def reset_game(to_menu=False):
     consecutive_runes = 0
     game_over_played = False
     if to_menu:
-        game_state = MENU
+        game_state = HERO_SELECT
     else:
         player_image = original_player_img
         game_state = PLAYING
 
 
+def draw_gold_button(rect, text):
+    global last_hovered_button
+
+    if rect.collidepoint((mx, my)):
+        if last_hovered_button != text:
+            sounds["button_hover"].play()
+            last_hovered_button = text
+    else:
+        if last_hovered_button == text:
+            last_hovered_button = None
+
+    panel = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+
+    if rect.collidepoint((mx, my)):
+        panel.fill((120, 70, 20, 200))
+
+        pygame.draw.rect(panel, (255, 170, 80), panel.get_rect(), 2, border_radius=6)
+
+        glow = pygame.Surface((rect.width + 8, rect.height + 8), pygame.SRCALPHA)
+        pygame.draw.rect(glow, (255, 120, 40, 80), glow.get_rect(), border_radius=8)
+        screen.blit(glow, (rect.x - 4, rect.y - 4))
+
+    else:
+        panel.fill((30, 20, 10, 200))
+        pygame.draw.rect(panel, (200, 150, 80), panel.get_rect(), 2, border_radius=6)
+
+    screen.blit(panel, rect.topleft)
+
+    txt = font.render(text, True, (255,255,255))
+    screen.blit(txt, (rect.centerx - txt.get_width()//2,
+                      rect.centery - txt.get_height()//2))
+
+
+def draw_text_outline(surface, text, font, x, y, text_color, outline_color=(0,0,0)):
+    base = font.render(text, True, text_color)
+    outline = font.render(text, True, outline_color)
+
+    for dx in (-2, -1, 1, 2):
+        for dy in (-2, -1, 1, 2):
+            surface.blit(outline, (x + dx, y + dy))
+
+    surface.blit(base, (x, y))
+
 running = True
+
+play_music("sounds/main_menu.ogg")
+
 while running:
-    screen.blit(menu_background, (0, 0))
+    screen.blit(hero_select, (0, 0))
     screen.blit(menu_overlay, (0, 0))
     mx, my = pygame.mouse.get_pos()
+
+    if game_state == MAIN_MENU:
+        screen.blit(main_menu_bg, (0, 0))
+
+        draw_gold_button(how_to_play_btn, "HOW TO PLAY")
+        draw_gold_button(choose_hero_btn, "CHOOSE HERO")
+
+    if game_state == HOW_TO_PLAY:
+
+        start_x = 60
+        start_y = 130
+        line_gap = 60
+        icon_size = 48
+
+        screen.blit(how_to_play_bg, (0, 0))
+
+        back_btn_top = pygame.Rect(40, 40, 120, 45)
+        draw_gold_button(back_btn_top, "BACK")
+
+        y = start_y
+
+        for rtype, text in rune_data.items():
+            icon = rune_images[rtype]
+
+            icon_scaled = pygame.transform.smoothscale(icon, (icon_size, icon_size))
+            screen.blit(icon_scaled, (start_x, y))
+
+            draw_text_outline(
+                screen,
+                text,
+                font,
+                start_x + icon_size + 15,
+                y + 10,
+                (240, 240, 240)
+            )
+
+            y += line_gap
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if game_state == MENU and event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+
+            if game_state == MAIN_MENU:
+
+                if how_to_play_btn.collidepoint(event.pos):
+                    game_state = HOW_TO_PLAY
+                    play_music("sounds/main_menu.ogg")
+
+                if choose_hero_btn.collidepoint(event.pos):
+                    game_state = HERO_SELECT
+                    play_music("sounds/hero_select.wav")
+
+            if game_state == HOW_TO_PLAY:
+                screen.blit(how_to_play_bg, (0, 0))
+
+                pygame.draw.rect(screen, (50, 50, 50), back_btn, border_radius=8)
+                screen.blit(font.render("Back", True, (255, 255, 255)), (back_btn.x + 25, back_btn.y + 12))
+
+
+            if game_state == HOW_TO_PLAY and event.type == pygame.MOUSEBUTTONDOWN:
+
+                if back_btn.collidepoint(event.pos):
+                    game_state = MAIN_MENU
+                    play_music("sounds/main_menu.ogg")
+
+
+        if game_state == HERO_SELECT and event.type == pygame.MOUSEBUTTONDOWN:
+
+            back_btn_bottom = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+
+            if back_btn_bottom.collidepoint(event.pos):
+                game_state = MAIN_MENU
+                play_music("sounds/main_menu.ogg")
+
             cols = 3
+
             for i, name in enumerate(HEROES.keys()):
                 col, row = i % cols, i // cols
                 rect = pygame.Rect(100 + (col * 280), 140 + (row * 55), 260, 45)
@@ -272,12 +418,13 @@ while running:
             if retry_btn.collidepoint(event.pos): reset_game(False)
             if menu_btn.collidepoint(event.pos): reset_game(True)
 
-    if game_state == MENU:
+    if game_state == HERO_SELECT:
         title = title_font.render("CHOOSE YOUR HERO", True, (255, 180, 60))
         shadow = title_font.render("CHOOSE YOUR HERO", True, (0, 0, 0))
 
         screen.blit(shadow, (WIDTH // 2 - title.get_width() // 2 + 4, 44))
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
+
         cols = 3
 
         if random.random() < 0.2:
@@ -324,6 +471,9 @@ while running:
 
             for e in embers:
                 pygame.draw.circle(screen, (255, 120, 40), (int(e["x"]), int(e["y"])), e["size"])
+
+        back_btn_bottom = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+        draw_gold_button(back_btn_bottom, "BACK")
 
 
     elif game_state in [PLAYING, GAME_OVER]:
