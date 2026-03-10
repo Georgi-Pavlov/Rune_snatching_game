@@ -18,7 +18,7 @@ pygame.init()
 
 pygame.mixer.init()
 
-WIDTH, HEIGHT = 1000, 700
+WIDTH, HEIGHT = 1100, 750
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rune Catcher")
 
@@ -100,10 +100,10 @@ for name, path in HEROES.items():
     try:
         img = pygame.image.load(resource_path(path))
         hero_icons[name] = pygame.transform.scale(img, (40, 40))
-        hero_full[name] = pygame.transform.scale(img, (200, 200))
+        hero_full[name] = pygame.transform.scale(img, (190, 190))
     except:
         hero_icons[name] = pygame.Surface((40, 40))
-        hero_full[name] = pygame.Surface((200, 200))
+        hero_full[name] = pygame.Surface((190, 190))
 
 player_image = None
 original_player_img = None
@@ -159,7 +159,7 @@ for s in sounds.values():
     s.set_volume(0.35)
 
 # --- Game Variables ---
-player = pygame.Rect(WIDTH // 2, HEIGHT - 190, 200, 200)
+player = pygame.Rect(WIDTH // 2, HEIGHT - 190, 190, 190)
 player_speed = base_speed = 6
 gold = 0
 lives = 10
@@ -180,6 +180,7 @@ consecutive_runes = 0
 last_hovered_hero = None
 game_over_played = False
 last_hovered_button = None
+player_mask = None
 
 rune_weights = {"normal": 40,
                 "dd": 15,
@@ -249,7 +250,14 @@ def spawn_rune():
     rtype = random.choices(list(rune_weights.keys()), weights=rune_weights.values())[0]
     rect = rune_images[rtype].get_rect()
     rect.x, rect.y = random.randint(0, WIDTH - rect.width), -rect.height
-    return {"type": rtype, "rect": rect}
+    image = rune_images[rtype]
+    mask = pygame.mask.from_surface(image)
+
+    return {
+        "type": rtype,
+        "rect": rect,
+        "mask": mask
+    }
 
 
 def reset_game(to_menu=False):
@@ -411,6 +419,13 @@ while running:
                     sounds["hero_select"].play()
                     original_player_img = hero_full[name]
                     player_image = original_player_img
+
+                    player = player_image.get_rect()
+                    player.centerx = WIDTH // 2
+                    player.bottom = HEIGHT - 10
+
+                    player_mask = pygame.mask.from_surface(player_image)
+
                     selected_hero = name
                     reset_game(False)
 
@@ -493,7 +508,9 @@ while running:
 
             for rune in runes: rune["rect"].y += rune_speed
             for rune in runes[:]:
-                if player.colliderect(rune["rect"]):
+                offset = (rune["rect"].x - player.x, rune["rect"].y - player.y)
+
+                if player_mask.overlap(rune["mask"], offset):
                     rtype = rune["type"]
 
                     if rtype == "normal":
@@ -622,30 +639,30 @@ while running:
 
                 if gold >= 300 and rune_speed == 3:
                     rune_speed += 1
-                    base_speed += 0.5
+                    base_speed += 1
                     player_speed = base_speed
 
                 if gold >= 700 and rune_speed == 4:
                     rune_speed += 1
-                    base_speed += 0.5
+                    base_speed += 1
                     player_speed = base_speed
 
-                if gold >= 2000 and rune_speed == 5:
+                if gold >= 1500 and rune_speed == 5:
                     rune_speed += 1
-                    base_speed += 0.5
+                    base_speed += 1
                     player_speed = base_speed
 
-                if gold >= 5000 and rune_speed == 6:
+                if gold >= 4000 and rune_speed == 6:
                     rune_speed += 1
-                    base_speed += 0.5
+                    base_speed += 1
                     player_speed = base_speed
 
-                if gold >= 8000 and rune_speed == 7:
+                if gold >= 7000 and rune_speed == 7:
                     rune_speed += 1
-                    base_speed += 0.5
+                    base_speed += 1
                     player_speed = base_speed
 
-                if gold >= 11000 and rune_speed == 8:
+                if gold >= 10000 and rune_speed == 8:
                     rune_speed += 1
 
             # Timers
@@ -670,8 +687,6 @@ while running:
                 damage_flash.set_alpha(damage_flash_alpha)
 
         # --- Rendering ---
-        if not invisible:
-            screen.blit(player_image, player)
 
         offset_x = offset_y = 0
 
