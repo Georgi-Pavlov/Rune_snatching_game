@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 import os
+from bosses.cave_guardians import CaveGuardians
 
 
 def resource_path(relative_path):
@@ -12,7 +13,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-pygame.mixer.pre_init(44100, -16, 2, 512)
+pygame.mixer.pre_init(44100, -16, 2, 128)
 
 pygame.init()
 
@@ -48,9 +49,30 @@ damage_flash.set_alpha(damage_flash_alpha)
 MAIN_MENU = 0
 HERO_SELECT = 1
 HOW_TO_PLAY = 2
-PLAYING = 3
-GAME_OVER = 4
+STORY = 3
+PLAYING = 4
+GAME_OVER = 5
+BOSS_FIGHT = 6
 game_state = MAIN_MENU
+
+story_lines = [
+"For centuries the runes of power flowed freely across the land.",
+"",
+"Gold, Haste, Regeneration... fragments of ancient magic.",
+"",
+"But something has changed.",
+"",
+"The legendary Golden Rune has been stolen.",
+"",
+"Without it the rune cycle is broken.",
+"Magic spills uncontrollably across the world.",
+"",
+"Deep within a forgotten cave, creatures guard the stolen power.",
+"",
+"Heroes have begun the hunt.",
+"",
+"You are one of them."
+]
 
 # --- Hero Data ---
 HEROES = {
@@ -181,6 +203,8 @@ last_hovered_hero = None
 game_over_played = False
 last_hovered_button = None
 player_mask = None
+current_boss = None
+boss_defeated = False
 
 rune_weights = {"normal": 40,
                 "dd": 15,
@@ -334,6 +358,10 @@ while running:
     screen.blit(menu_overlay, (0, 0))
     mx, my = pygame.mouse.get_pos()
 
+    #FPS
+    fps = int(clock.get_fps())
+    screen.blit(font.render(f"FPS: {fps}", True, (255, 255, 255)), (10, 70))
+
     if game_state == MAIN_MENU:
         screen.blit(main_menu_bg, (0, 0))
 
@@ -374,6 +402,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if game_state == STORY and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                reset_game(False)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -427,7 +459,8 @@ while running:
                     player_mask = pygame.mask.from_surface(player_image)
 
                     selected_hero = name
-                    reset_game(False)
+                    game_state = STORY
+                    story_timer = pygame.time.get_ticks()
 
         if game_state == GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
             if retry_btn.collidepoint(event.pos): reset_game(False)
@@ -501,6 +534,10 @@ while running:
 
             hero_bg = hero_backgrounds.get(selected_hero)
 
+            if gold >= 12000 and game_state == PLAYING and not boss_defeated:
+                current_boss = CaveGuardians(screen, resource_path, rune_images, sounds, player, player_mask, player_image)
+                game_state = BOSS_FIGHT
+
             if hero_bg:
                 screen.blit(hero_bg, (0, 0))
             else:
@@ -510,95 +547,96 @@ while running:
             for rune in runes[:]:
                 offset = (rune["rect"].x - player.x, rune["rect"].y - player.y)
 
-                if player_mask.overlap(rune["mask"], offset):
-                    rtype = rune["type"]
+                if player.colliderect(rune["rect"]):
+                    if player_mask.overlap(rune["mask"], offset):
+                        rtype = rune["type"]
 
-                    if rtype == "normal":
-                        gold += 50 * multiplier
-                        sounds["pickup"].play()
-                        consecutive_runes += 1
-                        update_multiplier()
-                        if multiplier == 1:
-                            add_floating_text("+50", rune["rect"].centerx, rune["rect"].centery)
-                        else:
-                            add_floating_text(f"+{50 * multiplier}", rune["rect"].centerx, rune["rect"].centery)
-                            add_floating_text(f"x{multiplier}!!!", player.x, HEIGHT - 120, (220, 220, 220))
-
-                    elif rtype == "dd":
-                        gold += 100 * multiplier
-                        sounds["pickup"].play()
-                        consecutive_runes += 1
-                        update_multiplier()
-                        if multiplier == 1:
-                            add_floating_text("+100", rune["rect"].centerx, rune["rect"].centery)
-                        else:
-                            add_floating_text(f"+{100 * multiplier}", rune["rect"].centerx, rune["rect"].centery)
-                            add_floating_text(f"x{multiplier}!!!", player.x, HEIGHT - 120, (220, 220, 220))
-
-                    elif rtype == "haste":
-                        sounds["haste"].play()
-                        player_speed = base_speed * 2
-                        haste_timer = pygame.time.get_ticks()
-
-                    elif rtype == "regen":
-                        if lives < max_lives:
-                            if lives + 3 <= max_lives:
-                                sounds["regen"].play()
-                                lives += 3
-                                add_floating_text(f"+3 HP", rune["rect"].centerx, rune["rect"].centery, (80, 255, 120))
+                        if rtype == "normal":
+                            gold += 50 * multiplier
+                            sounds["pickup"].play()
+                            consecutive_runes += 1
+                            update_multiplier()
+                            if multiplier == 1:
+                                add_floating_text("+50", rune["rect"].centerx, rune["rect"].centery)
                             else:
-                                missing_lives = max_lives - lives
-                                lives = max_lives
-                                sounds["regen"].play()
-                                add_floating_text(f"+{missing_lives} HP", rune["rect"].centerx, rune["rect"].centery,
-                                                  (80, 255, 120))
-                        else:
-                            sounds["miss"].play()
+                                add_floating_text(f"+{50 * multiplier}", rune["rect"].centerx, rune["rect"].centery)
+                                add_floating_text(f"x{multiplier}!!!", player.x, HEIGHT - 120, (220, 220, 220))
+
+                        elif rtype == "dd":
+                            gold += 100 * multiplier
+                            sounds["pickup"].play()
+                            consecutive_runes += 1
+                            update_multiplier()
+                            if multiplier == 1:
+                                add_floating_text("+100", rune["rect"].centerx, rune["rect"].centery)
+                            else:
+                                add_floating_text(f"+{100 * multiplier}", rune["rect"].centerx, rune["rect"].centery)
+                                add_floating_text(f"x{multiplier}!!!", player.x, HEIGHT - 120, (220, 220, 220))
+
+                        elif rtype == "haste":
+                            sounds["haste"].play()
+                            player_speed = base_speed * 2
+                            haste_timer = pygame.time.get_ticks()
+
+                        elif rtype == "regen":
+                            if lives < max_lives:
+                                if lives + 3 <= max_lives:
+                                    sounds["regen"].play()
+                                    lives += 3
+                                    add_floating_text(f"+3 HP", rune["rect"].centerx, rune["rect"].centery, (80, 255, 120))
+                                else:
+                                    missing_lives = max_lives - lives
+                                    lives = max_lives
+                                    sounds["regen"].play()
+                                    add_floating_text(f"+{missing_lives} HP", rune["rect"].centerx, rune["rect"].centery,
+                                                      (80, 255, 120))
+                            else:
+                                sounds["miss"].play()
 
 
-                    elif rtype == "creep":
-                        if shield:
-                            sounds["block"].play()
-                            shield = False
-                        else:
-                            lives -= 1
-                            sounds["damage"].play()
-                            damage_flash_alpha = 150
+                        elif rtype == "creep":
+                            if shield:
+                                sounds["block"].play()
+                                shield = False
+                            else:
+                                lives -= 1
+                                sounds["damage"].play()
+                                damage_flash_alpha = 150
+                                consecutive_runes = 0
+                                update_multiplier()
+                                shake_timer = 10
+                                shake_strength = 6
+                                add_floating_text("-1 HP", rune["rect"].centerx, rune["rect"].centery, (255, 80, 80))
+
+                        elif rtype == "hex":
+                            sounds["hex"].play()
                             consecutive_runes = 0
                             update_multiplier()
-                            shake_timer = 10
-                            shake_strength = 6
-                            add_floating_text("-1 HP", rune["rect"].centerx, rune["rect"].centery, (255, 80, 80))
+                            player_speed = base_speed // 2
+                            player_image = frog_img
+                            hex_timer = pygame.time.get_ticks()
 
-                    elif rtype == "hex":
-                        sounds["hex"].play()
-                        consecutive_runes = 0
-                        update_multiplier()
-                        player_speed = base_speed // 2
-                        player_image = frog_img
-                        hex_timer = pygame.time.get_ticks()
+                        elif rtype == "water":
+                            if lives < max_lives:
+                                lives += 1
+                                sounds["water"].play()
+                                add_floating_text("+1 HP", rune["rect"].centerx, rune["rect"].centery, (80, 200, 255))
+                            else:
+                                sounds["miss"].play()
 
-                    elif rtype == "water":
-                        if lives < max_lives:
-                            lives += 1
-                            sounds["water"].play()
-                            add_floating_text("+1 HP", rune["rect"].centerx, rune["rect"].centery, (80, 200, 255))
-                        else:
-                            sounds["miss"].play()
+                        elif rtype == "shield":
+                            sounds["shield"].play()
+                            shield = True
 
-                    elif rtype == "shield":
-                        sounds["shield"].play()
-                        shield = True
+                        elif rtype == "invisible":
+                            sounds["invisible"].play()
+                            consecutive_runes = 0
+                            update_multiplier()
+                            invisible = True
+                            invisible_timer = pygame.time.get_ticks()
 
-                    elif rtype == "invisible":
-                        sounds["invisible"].play()
-                        consecutive_runes = 0
-                        update_multiplier()
-                        invisible = True
-                        invisible_timer = pygame.time.get_ticks()
-
-                    runes.remove(rune)
-                    continue
+                        runes.remove(rune)
+                        continue
 
                 if rune["rect"].top > HEIGHT:
 
@@ -618,12 +656,12 @@ while running:
 
                     runes.remove(rune)
 
-                for ft in floating_texts[:]:
-                    ft["y"] -= 1
-                    ft["timer"] -= 1
+            for ft in floating_texts[:]:
+                ft["y"] -= 1
+                ft["timer"] -= 1
 
-                    if ft["timer"] <= 0:
-                        floating_texts.remove(ft)
+                if ft["timer"] <= 0:
+                    floating_texts.remove(ft)
 
             while len(runes) < max_runes:
                 runes.append(spawn_rune())
@@ -703,6 +741,11 @@ while running:
             screen.blit(text_surface, (ft["x"], ft["y"]))
 
         # UI
+
+        #FPS
+        fps = int(clock.get_fps())
+        screen.blit(font.render(f"FPS: {fps}", True, (255, 255, 255)), (10, 70))
+
         screen.blit(font.render(f"Gold: {gold}", True, (255, 255, 0)), (10, 10))
         screen.blit(heart_img, (WIDTH - 120, 10))
         pygame.draw.line(screen, (120, 120, 120), (WIDTH - 260, 55), (WIDTH - 0, 55), 1)
@@ -762,6 +805,151 @@ while running:
                 pygame.draw.rect(screen, (200, 200, 200), btn, 2, border_radius=5)
                 l_txt = font.render(label, True, (255, 255, 255))
                 screen.blit(l_txt, (btn.centerx - l_txt.get_width() // 2, btn.centery - l_txt.get_height() // 2))
+
+
+    elif game_state == BOSS_FIGHT:
+
+        if haste_timer:
+            if pygame.time.get_ticks() - haste_timer > 5000:
+                player_speed = base_speed
+                haste_timer = 0
+
+        if hex_timer:
+            if pygame.time.get_ticks() - hex_timer > 5000:
+                player_speed = base_speed
+                player_image = original_player_img
+                hex_timer = 0
+
+        if invisible and pygame.time.get_ticks() - invisible_timer > INVISIBLE_DURATION:
+            invisible = False
+
+        if lives <= 0:
+            game_state = GAME_OVER
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT] and player.left > 0:
+            player.x -= player_speed
+
+        if keys[pygame.K_RIGHT] and player.right < WIDTH:
+            player.x += player_speed
+
+        result = current_boss.update()
+
+        screen.blit(font.render(f"Gold: {gold}", True, (255, 255, 0)), (10, 10))
+        screen.blit(heart_img, (WIDTH - 120, 10))
+        pygame.draw.line(screen, (120, 120, 120), (WIDTH - 260, 55), (WIDTH - 0, 55), 1)
+        screen.blit(font.render(str(lives), True, (255, 255, 255)), (WIDTH - 70, 18))
+
+        screen.blit(font.render(f"Combo: {consecutive_runes}", True, (180, 180, 180)), (10, 40))
+
+        if not invisible:
+            screen.blit(player_image, (player.x + offset_x, player.y + offset_y))
+
+        if damage_flash_alpha > 0:
+            screen.blit(damage_flash, (0, 0))
+
+        statuses = [
+            ("SHIELD", shield, None, 0),
+            ("INVIS", invisible, invisible_timer, INVISIBLE_DURATION),
+            ("HASTED", haste_timer != 0, haste_timer, 5000),
+            ("HEXED", hex_timer != 0, hex_timer, 5000)
+        ]
+
+        start_x = WIDTH - 260
+        y = 60
+
+        for name, active, timer, duration in statuses:
+
+            color = (220, 220, 220) if active else (90, 90, 90)
+
+            text = status_font.render(name, True, color)
+            screen.blit(text, (start_x, y))
+
+            if active and timer:
+                remaining = max(0, duration - (pygame.time.get_ticks() - timer))
+                seconds = int(remaining / 1000)
+
+                timer_text = status_font.render(str(seconds), True, (255, 200, 120))
+                screen.blit(timer_text, (start_x + 10, y + 18))
+
+                glow = status_font.render(name, True, (255, 180, 80))
+                screen.blit(glow, (start_x, y))
+
+            start_x += 70
+
+        if game_state == GAME_OVER:
+
+            if not game_over_played:
+                sounds["game_over"].play()
+                game_over_played = True
+
+            s = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            s.fill((0, 0, 0, 180))
+            screen.blit(s, (0, 0))
+            msg = title_font.render("GAME OVER", True, (255, 50, 50))
+            screen.blit(msg, (WIDTH // 2 - msg.get_width() // 2, HEIGHT // 2 - 100))
+
+            for btn, label in [(retry_btn, "RETRY"), (menu_btn, "CHANGE HERO")]:
+                pygame.draw.rect(screen, (80, 80, 80), btn, border_radius=5)
+                pygame.draw.rect(screen, (200, 200, 200), btn, 2, border_radius=5)
+                l_txt = font.render(label, True, (255, 255, 255))
+                screen.blit(l_txt, (btn.centerx - l_txt.get_width() // 2, btn.centery - l_txt.get_height() // 2))
+
+        if isinstance(result, dict):
+            if result["damage"] > 0:
+                if shield:
+                    shield = False
+                    sounds["block"].play()
+                else:
+                    lives -= result["damage"]
+                    damage_flash_alpha = 150
+                    sounds["damage"].play()
+
+            if result["heal"] > 0:
+                lives = min(max_lives, lives + result["heal"])
+
+            if result["haste"]:
+                player_speed = base_speed * 2
+                haste_timer = pygame.time.get_ticks()
+
+            if result["shield"]: shield = True
+
+            if result["hex"]:
+                player_speed = base_speed // 2
+                player_image = frog_img
+                hex_timer = pygame.time.get_ticks()
+
+            if result["invis"]:
+                invisible = True
+                invisible_timer = pygame.time.get_ticks()
+
+
+
+        elif result == "win":
+            base_speed += 1
+            player_speed = base_speed
+            runes = []
+            gold = 0
+            boss_defeated = True
+            current_boss = None
+            game_state = PLAYING
+
+    elif game_state == STORY:
+
+        screen.fill((0, 0, 0))
+
+        line_height = 35
+        total_height = len(story_lines) * line_height
+        y = HEIGHT // 2 - total_height // 2
+
+        for line in story_lines:
+            txt = font.render(line, True, (220, 220, 220))
+            screen.blit(txt, (WIDTH // 2 - txt.get_width() // 2, y))
+            y += line_height
+
+        hint = font.render("Press SPACE to begin the hunt", True, (180, 180, 180))
+        screen.blit(hint, (WIDTH // 2 - hint.get_width() // 2, HEIGHT - 80))
 
     pygame.display.flip()
     clock.tick(60)
