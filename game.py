@@ -941,12 +941,11 @@ while running:
 
 
         elif result == "win":
+
+            reset_game(False)
             base_speed += 1
             player_speed = base_speed
-            runes = []
-            gold = 0
-            multiplier = 1
-            consecutive_runes = 0
+
             boss_defeated = False
             current_boss = None
             game_state = PLAYING
