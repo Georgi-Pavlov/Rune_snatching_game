@@ -1,7 +1,8 @@
 # Rune_snatching_game
 Catch the rune before it falls
 
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0e9867a2-2869-4386-97f8-1e21fcbd5ec1" /><img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/b99db901-77e4-45ec-a64a-0f63ed1d9419" /><img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/5a7ba797-1c0b-48ce-8ad7-8e11281b429e" />
+<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/0e9867a2-2869-4386-97f8-1e21fcbd5ec1" /><img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/b99db901-77e4-45ec-a64a-0f63ed1d9419" /><img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/5a7ba797-1c0b-48ce-8ad7-8e11281b429e" /> <img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/624b74d8-c904-411d-91b4-a3cf1086ad73" />
+
 
 
 
@@ -30,6 +31,16 @@ However, there are othe runes and traps:
 <img width="80" height="80" alt="shield" src="https://github.com/user-attachments/assets/e71b1242-79a7-4b98-86dc-8304b6edabce" /> - the shield rune will protect you from one live removal
 
 
+
+BOSS fight:
+
+
+After every 12k gold the boss stage is loaded. The first (and for now only) encaunter is with the cave entrance guardiance:
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/8be1cc1e-6e6d-4e03-860d-a00e444f7787" /> <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/b37298cc-0196-4ae4-8241-5f11d32ff0ca" />
+
+They will attack you one by one dealing 1hp and 2 hp of damage.
+
+When you catch gold or double damage rune, you will attack them for 1hp of damage. Every 4th consecutive rune will do critical hit on the boss.
 
 
 
