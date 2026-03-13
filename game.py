@@ -24,8 +24,12 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rune Catcher")
 
 clock = pygame.time.Clock()
+# General font
 font = pygame.font.SysFont(None, 24)
 title_font = pygame.font.SysFont("timesnewroman", 80, bold=True)
+
+# Story font
+story_font = pygame.font.SysFont("georgia", 28)
 
 hero_select = pygame.image.load(resource_path("pics/hero_select_background.png"))
 hero_select = pygame.transform.scale(hero_select, (WIDTH, HEIGHT))
@@ -35,6 +39,9 @@ main_menu_bg = pygame.transform.scale(main_menu_bg, (WIDTH, HEIGHT))
 
 how_to_play_bg = pygame.image.load(resource_path("pics/how_to_play.png")).convert()
 how_to_play_bg = pygame.transform.scale(how_to_play_bg, (WIDTH, HEIGHT))
+
+story_begin = pygame.image.load(resource_path("pics/story_begin.png")).convert()
+story_begin = pygame.transform.scale(story_begin, (WIDTH, HEIGHT))
 
 menu_overlay = pygame.Surface((WIDTH, HEIGHT))
 menu_overlay.fill((0, 0, 0))
@@ -65,6 +72,7 @@ story_lines = [
 "The legendary Golden Rune has been stolen.",
 "",
 "Without it the rune cycle is broken.",
+"",
 "Magic spills uncontrollably across the world.",
 "",
 "Deep within a forgotten cave, creatures guard the stolen power.",
@@ -135,7 +143,7 @@ frog_img = pygame.transform.scale(pygame.image.load(resource_path("pics/frog.png
 heart_img = pygame.transform.scale(pygame.image.load(resource_path("pics/heart.png")), (40, 40))
 
 rune_images = {
-    "normal": pygame.transform.scale(pygame.image.load(resource_path("pics/rune.png")), (60, 60)),
+    "normal": pygame.transform.scale(pygame.image.load(resource_path("pics/runе.png")), (60, 60)),
     "dd": pygame.transform.scale(pygame.image.load(resource_path("pics/dd.png")), (60, 60)),
     "haste": pygame.transform.scale(pygame.image.load(resource_path("pics/haste.png")), (60, 60)),
     "regen": pygame.transform.scale(pygame.image.load(resource_path("pics/regen.png")), (60, 60)),
@@ -147,8 +155,10 @@ rune_images = {
 }
 
 rune_data = {
-    "normal": "Gold rune: +50 gold if you catch it, or -1hp if you dont",
-    "dd": "Double Damage rune: +100 gold if you catch it, or -1hp if you dont",
+    "normal": """Gold rune: +50 gold if you catch it, or -1hp if you dont
+    During boss fight: -1hp to the boss""",
+    "dd": """Double Damage rune: +100 gold if you catch it, or -1hp if you dont
+    During boss fight: -1hp to the boss""",
     "haste": "Haste rune: double movement speed",
     "regen": "Regeneration rune: restore up to 3HP",
     "creep": "Enemy creep: damages you",
@@ -354,8 +364,7 @@ running = True
 play_music("sounds/main_menu.ogg")
 
 while running:
-    screen.blit(hero_select, (0, 0))
-    screen.blit(menu_overlay, (0, 0))
+
     mx, my = pygame.mouse.get_pos()
 
     #FPS
@@ -467,6 +476,8 @@ while running:
             if menu_btn.collidepoint(event.pos): reset_game(True)
 
     if game_state == HERO_SELECT:
+        screen.blit(hero_select, (0, 0))
+        screen.blit(menu_overlay, (0, 0))
         title = title_font.render("CHOOSE YOUR HERO", True, (255, 180, 60))
         shadow = title_font.render("CHOOSE YOUR HERO", True, (0, 0, 0))
 
@@ -535,6 +546,7 @@ while running:
             hero_bg = hero_backgrounds.get(selected_hero)
 
             if gold >= 12000 and game_state == PLAYING and not boss_defeated:
+                lives = 10
                 current_boss = CaveGuardians(screen, resource_path, rune_images, sounds, player, player_mask, player_image)
                 game_state = BOSS_FIGHT
 
@@ -925,31 +937,47 @@ while running:
                 invisible_timer = pygame.time.get_ticks()
 
 
-
         elif result == "win":
             base_speed += 1
             player_speed = base_speed
             runes = []
             gold = 0
+            multiplier = 1
             boss_defeated = True
             current_boss = None
             game_state = PLAYING
 
     elif game_state == STORY:
 
-        screen.fill((0, 0, 0))
+        screen.blit(story_begin, (0, 0))
 
-        line_height = 35
+        line_height = 25
         total_height = len(story_lines) * line_height
         y = HEIGHT // 2 - total_height // 2
 
         for line in story_lines:
-            txt = font.render(line, True, (220, 220, 220))
-            screen.blit(txt, (WIDTH // 2 - txt.get_width() // 2, y))
+            if line.strip() == "":
+                y += line_height
+                continue
+
+            temp_surface = story_font.render(line, True, (0, 0, 0))
+            text_x = WIDTH // 2 - temp_surface.get_width() // 2
+
+            draw_text_outline(
+                screen,
+                line,
+                story_font,
+                text_x,
+                y,
+                (240, 240, 240),
+                (0, 0, 0),
+            )
+
             y += line_height
 
-        hint = font.render("Press SPACE to begin the hunt", True, (180, 180, 180))
-        screen.blit(hint, (WIDTH // 2 - hint.get_width() // 2, HEIGHT - 80))
+        hint_text = "Press SPACE to begin the hunt"
+        hint_x = WIDTH // 2 - font.render(hint_text, True, (0, 0, 0)).get_width() // 2
+        draw_text_outline(screen, hint_text, font, hint_x, HEIGHT - 80, (180, 180, 180), (0, 0, 0))
 
     pygame.display.flip()
     clock.tick(60)

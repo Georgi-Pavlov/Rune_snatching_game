@@ -9,7 +9,7 @@ DONE = 3
 
 
 class CaveGuardians:
-    def __init__(self, screen, resource_path, rune_images, sounds, player, player_mask, player_img):
+    def __init__(self, screen, resource_path, rune_images, sounds, player, player_mask, player_img, overlay):
         self.screen = screen
         self.resource_path = resource_path
         self.rune_images = rune_images
@@ -20,6 +20,9 @@ class CaveGuardians:
 
         self.WIDTH = 1100
         self.HEIGHT = 750
+
+        self.overlay = pygame.Surface((self.WIDTH, self.HEIGHT), pygame.SRCALPHA)
+        self.overlay.fill((0, 0, 0, 120))
 
         # Assets
         self.cave_bg = pygame.image.load(resource_path("pics/cave_entrance_background.png")).convert()
@@ -38,7 +41,6 @@ class CaveGuardians:
         self.guardian2_hp = 12
         self.runes = []
         self.runes_caught_for_attack = 0
-        #self.guardian_attack_counter = 0
         self.rune_speed = 7
         self.state = INTRO
         self.timer = pygame.time.get_ticks()
@@ -55,6 +57,17 @@ class CaveGuardians:
 
         # UI
         self.floating_texts = []
+
+
+    def add_floating_text(self, text, x, y, color=(255, 255, 0)):
+        self.floating_texts.append({
+            "text": text,
+            "x": x,
+            "y": y,
+            "timer": 60,
+            "color": color
+        })
+
 
     def spawn_rune(self):
         types = list(self.rune_images.keys())
@@ -84,28 +97,43 @@ class CaveGuardians:
             return "win"
         return None
 
+
+    def draw_local_outline(self, text, x, y):
+        """Helper to ensure we see text if main function isn't in scope"""
+        outline_color = (0, 0, 0)
+        main_color = (255, 200, 80)  # Nice gold color for boss intro
+        for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
+            surf = self.font.render(text, True, outline_color)
+            self.screen.blit(surf, (x + dx, y + dy))
+        main_surf = self.font.render(text, True, main_color)
+        self.screen.blit(main_surf, (x, y))
+
+
     def update_intro(self):
-        self.screen.fill((0, 0, 0))
 
-        # Render the lines
-        t1 = self.font.render("The entrance to the cave stands before you.", True, (200, 200, 200))
-        t2 = self.font.render("For centuries the Golden Rune has been hidden here.", True, (200, 200, 200))
-        t3 = self.font.render("Two ancient guardians protect it.", True, (200, 200, 200))
-        t4 = self.font.render("They will not step aside willingly.", True, (200, 200, 200))
+        self.screen.blit(self.cave_bg, (0, 0))
+        self.screen.blit(self.overlay, (0, 0))
 
-        # Calculate positions (Centered X, incremented Y)
-        center_x = self.WIDTH // 2
-        start_y = self.HEIGHT // 2 - 80  # starting point
+        lines = [
+            "The entrance to the cave stands before you.",
+            "For centuries the Golden Rune has been hidden here.",
+            "Two ancient guardians protect it.",
+            "They will not step aside willingly."
+        ]
 
-        self.screen.blit(t1, (center_x - t1.get_width() // 2, start_y))
-        self.screen.blit(t2, (center_x - t2.get_width() // 2, start_y + 50))
-        self.screen.blit(t3, (center_x - t3.get_width() // 2, start_y + 100))
-        self.screen.blit(t4, (center_x - t4.get_width() // 2, start_y + 150))
+        start_y = self.HEIGHT // 2 - 80
+        for i, text in enumerate(lines):
+            line_surface = self.font.render(text, True, (0, 0, 0))
+            text_x = self.WIDTH // 2 - line_surface.get_width() // 2
+            text_y = start_y + (i * 50)
+
+            self.draw_local_outline(text, text_x, text_y)
 
         if pygame.time.get_ticks() - self.timer > 4000:  # Increased to 4s so player can actually read it!
             self.state = FIGHT
             self.last_attack_time = pygame.time.get_ticks()
         return None
+
 
     def fight(self):
         # Dictionary to send updates back to game.py
@@ -149,20 +177,20 @@ class CaveGuardians:
                     self.sounds["pickup"].play()
                     self.runes_caught_for_attack += 1
 
-                    # if self.runes_caught_for_attack % 3 == 0:
-                    #     self.guardian_attack_counter += 1
-                    #
-                    #     if self.guardian_attack_counter % 2 != 0:
-                    #         events["damage"] = 1
-                    #         self.sounds["damage"].play()
-                    #     else:
-                    #         events["damage"] = 2
-                    #         self.sounds["damage"].play()
-
-                    if self.runes_caught_for_attack % 6 == 0:
+                    if self.runes_caught_for_attack % 4 == 0:
                         dmg = 3
+                        # Add floating damage text over the boss
+                        dmg_text = f"-{dmg} HP"
+                        # Target Guardian 1 if he's alive, otherwise Guardian 2
+                        target_x = self.guardian1_rect.centerx if self.guardian1_hp > 0 else self.guardian2_rect.centerx
+                        self.add_floating_text(dmg_text, target_x, 100, (255, 100, 100))
                     else:
                         dmg = 1
+                        # Add floating damage text over the boss
+                        dmg_text = f"-{dmg} HP"
+                        # Target Guardian 1 if he's alive, otherwise Guardian 2
+                        target_x = self.guardian1_rect.centerx if self.guardian1_hp > 0 else self.guardian2_rect.centerx
+                        self.add_floating_text(dmg_text, target_x, 100, (255, 100, 100))
 
                     if self.guardian1_hp > 0:
                         self.guardian1_hp -= dmg
@@ -175,9 +203,11 @@ class CaveGuardians:
                     self.sounds["haste"].play()
                 elif rtype == "regen":
                     events["heal"] = 3
+                    self.add_floating_text("+3 HP", self.player.x, self.player.y - 40, (80, 255, 120))
                     self.sounds["regen"].play()
                 elif rtype == "water":
                     events["heal"] = 1
+                    self.add_floating_text("+1 HP", self.player.x, self.player.y - 40, (80, 200, 255))
                     self.sounds["water"].play()
                 elif rtype == "shield":
                     events["shield"] = True
@@ -192,6 +222,7 @@ class CaveGuardians:
                     self.runes_caught_for_attack = 0
                 elif rtype == "creep":
                     events["damage"] = 1
+                    self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
                     self.sounds["damage"].play()
                     self.runes_caught_for_attack = 0
 
@@ -200,6 +231,7 @@ class CaveGuardians:
             elif rune["rect"].top > self.HEIGHT:
                 if rune["type"] in ["normal", "dd"]:
                     events["damage"] = 1
+                    self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
                     self.sounds["damage"].play()
                     self.runes_caught_for_attack = 0
                 self.runes.remove(rune)
@@ -231,10 +263,21 @@ class CaveGuardians:
             self.state = OUTRO
             self.timer = pygame.time.get_ticks()
 
+        for ft in self.floating_texts[:]:
+            ft["y"] -= 1
+            ft["timer"] -= 1
+
+            # Draw the text
+            text_surf = self.font.render(ft["text"], True, ft["color"])
+            self.screen.blit(text_surf, (ft["x"], ft["y"]))
+
+            if ft["timer"] <= 0:
+                self.floating_texts.remove(ft)
+
         return events
 
     def update_outro(self):
-        self.screen.fill((0, 0, 0))
+        self.screen.blit(self.cave_bg, (0, 0))
 
         t1 = self.font.render("The guardians fall.", True, (200, 200, 200))
         t2 = self.font.render("The path into the cave is now open.", True, (200, 200, 200))
