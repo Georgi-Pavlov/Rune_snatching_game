@@ -184,7 +184,10 @@ sounds = {
     "hex": pygame.mixer.Sound(resource_path("sounds/hex.wav")),
     "haste": pygame.mixer.Sound(resource_path("sounds/haste.ogg")),
     "invisible": pygame.mixer.Sound(resource_path("sounds/invisible.ogg")),
-    "main_menu": pygame.mixer.Sound(resource_path("sounds/main_menu.ogg"))
+    "main_menu": pygame.mixer.Sound(resource_path("sounds/main_menu.ogg")),
+    "cave_entrance_guardian": pygame.mixer.Sound(resource_path("sounds/cave_entrance_guardian.ogg")),
+    "boss_win": pygame.mixer.Sound(resource_path("sounds/boss_win.wav")),
+    "cave_entrance_intro": pygame.mixer.Sound(resource_path("sounds/cave_entrance_intro.wav"))
 }
 
 for s in sounds.values():
@@ -943,7 +946,8 @@ while running:
             runes = []
             gold = 0
             multiplier = 1
-            boss_defeated = True
+            consecutive_runes = 0
+            boss_defeated = False
             current_boss = None
             game_state = PLAYING
 

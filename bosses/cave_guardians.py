@@ -9,7 +9,7 @@ DONE = 3
 
 
 class CaveGuardians:
-    def __init__(self, screen, resource_path, rune_images, sounds, player, player_mask, player_img, overlay):
+    def __init__(self, screen, resource_path, rune_images, sounds, player, player_mask, player_img):
         self.screen = screen
         self.resource_path = resource_path
         self.rune_images = rune_images
@@ -128,8 +128,10 @@ class CaveGuardians:
             text_y = start_y + (i * 50)
 
             self.draw_local_outline(text, text_x, text_y)
+            self.sounds["cave_entrance_intro"].play()
 
         if pygame.time.get_ticks() - self.timer > 4000:  # Increased to 4s so player can actually read it!
+            self.sounds["cave_entrance_intro"].stop()
             self.state = FIGHT
             self.last_attack_time = pygame.time.get_ticks()
         return None
@@ -174,7 +176,7 @@ class CaveGuardians:
 
                 # Attack Logic
                 if rtype in ["normal", "dd"]:
-                    self.sounds["pickup"].play()
+                    self.sounds["cave_entrance_guardian"].play()
                     self.runes_caught_for_attack += 1
 
                     if self.runes_caught_for_attack % 4 == 0:
@@ -277,22 +279,27 @@ class CaveGuardians:
         return events
 
     def update_outro(self):
+
         self.screen.blit(self.cave_bg, (0, 0))
+        self.screen.blit(self.overlay, (0, 0))
 
-        t1 = self.font.render("The guardians fall.", True, (200, 200, 200))
-        t2 = self.font.render("The path into the cave is now open.", True, (200, 200, 200))
-        t3 = self.font.render("You feel the adrenaline rush from the battle.", True, (200, 200, 200))
-        t4 = self.font.render("You are now alert for any danger! (+1 speed)", True, (200, 200, 200))
+        lines = [
+            "The guardians fall.",
+            "The path into the cave is now open.",
+            "You feel the adrenaline rush from the battle.",
+            "You are now alert for any danger! (+1 speed)"
+        ]
 
-        # Calculate positions (Centered X, incremented Y)
-        center_x = self.WIDTH // 2
-        start_y = self.HEIGHT // 2 - 80  # starting point
+        start_y = self.HEIGHT // 2 - 80
+        for i, text in enumerate(lines):
+            line_surface = self.font.render(text, True, (0, 0, 0))
+            text_x = self.WIDTH // 2 - line_surface.get_width() // 2
+            text_y = start_y + (i * 50)
 
-        self.screen.blit(t1, (center_x - t1.get_width() // 2, start_y))
-        self.screen.blit(t2, (center_x - t2.get_width() // 2, start_y + 50))
-        self.screen.blit(t3, (center_x - t3.get_width() // 2, start_y + 100))
-        self.screen.blit(t4, (center_x - t4.get_width() // 2, start_y + 150))
+            self.draw_local_outline(text, text_x, text_y)
+            self.sounds["boss_win"].play()
 
-        if pygame.time.get_ticks() - self.timer > 3000:
+        if pygame.time.get_ticks() - self.timer > 4000:
+            self.sounds["boss_win"].stop()
             self.state = DONE
         return None
