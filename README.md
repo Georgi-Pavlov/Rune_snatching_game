@@ -42,6 +42,7 @@ They will attack you one by one dealing 1hp and 2 hp of damage.
 When you catch gold or double damage rune, you will attack them for 1hp of damage. Every 4th consecutive rune will do critical hit on the boss.
 
 Then you will face the lava elemental - slow but hard hitting, dealing 4hp damage. 
+
 And Roshan - dealing normal 2hp damge. What he lacks as damage output he compensates with aggresion and sturdiness. 
 
 
