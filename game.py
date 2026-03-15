@@ -3,6 +3,8 @@ import random
 import sys
 import os
 from bosses.cave_guardians import CaveGuardians
+from bosses.lava_elemental import LavaElemental
+from bosses.roshan import Roshan
 
 
 def resource_path(relative_path):
@@ -30,6 +32,7 @@ title_font = pygame.font.SysFont("timesnewroman", 80, bold=True)
 
 # Story font
 story_font = pygame.font.SysFont("georgia", 28)
+hero_story_font = pygame.font.SysFont("garamond", 18)
 
 hero_select = pygame.image.load(resource_path("pics/hero_select_background.png"))
 hero_select = pygame.transform.scale(hero_select, (WIDTH, HEIGHT))
@@ -55,11 +58,13 @@ damage_flash.set_alpha(damage_flash_alpha)
 # --- States ---
 MAIN_MENU = 0
 HERO_SELECT = 1
-HOW_TO_PLAY = 2
-STORY = 3
-PLAYING = 4
-GAME_OVER = 5
-BOSS_FIGHT = 6
+HERO_STORY = 2
+PLAYING = 3
+ENDLESS = 4
+HOW_TO_PLAY = 5
+STORY = 6
+GAME_OVER = 7
+BOSS_FIGHT = 8
 game_state = MAIN_MENU
 
 story_lines = [
@@ -81,6 +86,107 @@ story_lines = [
 "",
 "You are one of them."
 ]
+
+# hero stories
+hero_stories = {
+    "Drow Ranger": [
+        "Dwelling deep within the forest and above the Glacier",
+        "few have ever caught a glimpse of the solitary and impossibly beautiful Drow Ranger.",
+        "Her presence was known only from the chill of frost arrows, driving deep into her enemies hearts.",
+        "Named and raised by the sympathetic Drow, Traxex draws on her heritage to deal with assailants who venture too close.",
+        "Honing her skill to peerless precision, the ranger's legendary marksmanship only improves with each passing skirmish."
+    ],
+    "Bristleback": [
+        "The enforcer at a local pub, Rigwarl's never failed to collect a tab.",
+        "His thorny back deters attacks while peppering foes with constant barrages of quill sprays.",
+        "When it comes to a fight, he really puts his back into it."''
+        "With every volley Rigwarl works himself into a fury, adding rage to each blow"
+    ],
+    "Dawnbreaker": [
+        "To those who dared organize defiance, the Children of Light would dispatch Valora "
+        "and her hammer to show a measure of their power.",
+        "Dawnbreaker shines Luminosity in the heart of battle",
+        "happily shattering her enemies with her celestial hammer, the Brightmaul."
+        "Always waiting to tap her true cosmic power she is eager to rout her enemies on the battlefield no matter where they are."
+    ],
+    "Night Stalker": [
+        "The beast of bedtime tales, Balanar is the primal terror that every child knows to fear.",
+        "Once the sun goes down, Night Stalker's hunt begins.",
+        "Charging through the shadowy forests, he snares his prey, forcing all who see him to flee,",
+        "arms withering and spells fizzling as their hearts are stricken with Crippling Fear."
+    ],
+    "Sniper": [
+        "With a single bullet, Kardel Sharpeye pierced the steep-stalker's central eye from the valley floor,",
+        "an ominous act that resulted in his ritual exile. He would win acclaim on a field of battle, or never return.",
+        "Like his mountain kin, the Sniper is one with his firearm.",
+        "No enemy is safe within the range of the Sniper's scope.",
+        "As he pauses to line up his cross-hairs, compensating for every variable before he Assassinates his mark in one fatal shot."
+    ],
+    "Undying": [
+        "Consumed by the chorus of the unending, Dirge, the Undying one marches across the land, rallying the dead to rise against the living.",
+        "He saps the strength from his enemies, and rip the souls from all close-by beings.",
+        "Monstrous and truly horrifying, Undying finds great pleasure in keeping himself alive and vital, while his adversaries suffer as he delivers death to the field."
+    ],
+    "Viper": [
+        "It was foolhardy to try and tame a Netherdrake, a lesson the old wizard learned in death.",
+        "Freed from his captor, Viper spread his wings and went forth to explore the surface world.",
+        "With his poison attacks imbued with virulent liquid, he is causing joints to harden, crippling foes whether they choose to flee or fight.",
+        "The Viper strike signals the beginning of the end. The afflicted victim staggers to a crawl, barely able to take its next step.",
+        "If the Netherdrake doesn't finish his targets off, the venom in their veins will."
+    ],
+    "Ancient Apparition": [
+        "Projected from the cold, infinite void, the Ancient Apparition known as Kaldr is but a faint image of his true self.",
+        "Nevertheless, his chilling touch is more than enough to make heroes quickly get cold feet",
+        "and before they know it, find themselves frozen in place.",
+        "All enemies have no choice but to retreat before their brittle bodies shatter to pieces..."
+    ],
+    "Crystal Maiden": [
+        "Wherever Rylai went, the cold went with her.",
+        "Fields and orchards withered in her wake, leaving her parents no choice but to pack her off to Icewrack, a realm in the frigid north.",
+        "Under the tutelage of a hermit wizard, Rylai learned to imprison her enemies with a thick block of ice, holding them in place as she freezes the ground.",
+        "In the heat of battle, Rylai keeps a cool head. Channeling her elemental talents, the Crystal Maiden obliterates all foes foolish enough to remain in her freezing field."
+    ],
+    "Dazzle": [
+        "A journey to the Nothl Realm changes all its visitors, not least of which Dazzle, a young acolyte of the Dezun Order.",
+        "Consecrated as a Shadow Priest, Dazzle sends outs shadow waves to mend and maim.",
+        "Foes are crippled by his paralytic enchantment while allies are blessed, cheating death no matter how severe their injuries.",
+        "Enemies within earshot of his incantations feel their bodies weaken, for those who cross Dazzle are invariably afflicted with an eternity of suffering."
+    ],
+    "Jakiro": [
+        "Most Pyrexae Dragons are hatched with one head, attuned to either ice or fire.",
+        "Then there was Jakiro, an accident of nature.",
+        "Possessing the might of both elements, the twin-headed dragon's dual breath freezes and burns simultaneously.",
+        "Gobs of liquid frost or liquid fire adhere to armor and walls, melting down steel and stone alike."
+    ],
+    "Lich": [
+        "Resurrected by a curious geomancer, Ethreain bewitched his savior with a sinister gaze, then promptly made the man his newest sacrifice.",
+        "Finally freed from the depths of the Black Pool, the Lich returns to wreak icy destruction on the world.",
+        "Ethreain floats across the battlefield to blast any who cross him."
+    ],
+    "Lina": [
+        "Like her younger sister, Lina's elemental affinity was the source of many headaches.",
+        "Sent south to live with a patient aunt, she learned to master her fiery soul in the blazing Desert of Misrule.",
+        "Attuned to fire, Lina ignites the ground, incinerating foes in a column of flame."
+    ],
+    "Warlock": [
+        "In the endless pursuit of rare texts, Demnok Lannik found it necessary to learn the magics",
+        "that would help him reach the most inaccessible tomes.",
+        "In short time, his obsessive study made him the most powerful Warlock in the academy.",
+        "He brings a chaotic offering and eldritch imps to every fight.",
+        "Not even an army can hold long against his dark spells and immolated golems."
+    ],
+    "Witch Doctor": [
+        "A bizarre figure shambles across the land, searching for any opportunity to apply the morbid arts of Prefectura Island.",
+        "To his allies, Zharvakko is a fountain of health, while to his foes he is the source of illness.",
+        "Notoriously known for cursing his adversaries and forcing them to relive the agony they will inevitably receive"
+    ],
+    "Zeus": [
+        "Charged with godly might emanating from his lightning hands Zeus calls down lightning bolts to smite his enemies.",
+        "None can hide from Zeus, pointing his arms skyward to bring divine punishment down on each and every foe.",
+        "Wherever they may be, none shall stand against the Thundergod's wrath."
+    ]
+
+}
 
 # --- Hero Data ---
 HEROES = {
@@ -187,7 +293,9 @@ sounds = {
     "main_menu": pygame.mixer.Sound(resource_path("sounds/main_menu.ogg")),
     "cave_entrance_guardian": pygame.mixer.Sound(resource_path("sounds/cave_entrance_guardian.ogg")),
     "boss_win": pygame.mixer.Sound(resource_path("sounds/boss_win.wav")),
-    "cave_entrance_intro": pygame.mixer.Sound(resource_path("sounds/cave_entrance_intro.wav"))
+    "cave_entrance_intro": pygame.mixer.Sound(resource_path("sounds/cave_entrance_intro.mp3")),
+    "roshan_intro": pygame.mixer.Sound(resource_path("sounds/roshan_intro.wav")),
+    "lava_elemental_intro": pygame.mixer.Sound(resource_path("sounds/lava_elemental_intro.mp3"))
 }
 
 for s in sounds.values():
@@ -217,7 +325,15 @@ game_over_played = False
 last_hovered_button = None
 player_mask = None
 current_boss = None
-boss_defeated = False
+endless_mode = False
+aegis = False
+
+# boss defeated status
+boss_defeated = {
+    "cave_guardians": False,
+    "lava_elemental": False,
+    "roshan": False,
+}
 
 rune_weights = {"normal": 40,
                 "dd": 15,
@@ -240,6 +356,11 @@ how_to_play_btn = pygame.Rect(60, HEIGHT - 90, 260, 55)
 choose_hero_btn = pygame.Rect(WIDTH - 320, HEIGHT - 90, 260, 55)
 
 back_btn = pygame.Rect(40, 40, 120, 50)
+
+hero_story_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+hero_story_play_btn = pygame.Rect(WIDTH - 300, HEIGHT - 80, 260, 45)
+hero_story_endless_btn = pygame.Rect(40, HEIGHT - 80, 260, 45)
+
 
 def play_music(file):
     pygame.mixer.music.stop()
@@ -362,6 +483,59 @@ def draw_text_outline(surface, text, font, x, y, text_color, outline_color=(0,0,
 
     surface.blit(base, (x, y))
 
+
+def draw_hero_story():
+
+    lines = hero_stories.get(selected_hero, ["No story yet."])
+
+    panel_x = 20
+    panel_width = 380
+    start_y = 40
+    line_height = 30
+
+    y = start_y
+
+    for line in lines:
+
+        words = line.split(" ")
+        current_line = ""
+
+        for word in words:
+
+            test_line = current_line + word + " "
+            test_surface = story_font.render(test_line, True, (255, 255, 255))
+
+            if test_surface.get_width() > panel_width:
+
+                draw_text_outline(
+                    screen,
+                    current_line,
+                    story_font,
+                    panel_x,
+                    y,
+                    (230, 220, 180),
+                    (0, 0, 0)
+                )
+
+                y += line_height
+                current_line = word + " "
+
+            else:
+                current_line = test_line
+
+        draw_text_outline(
+            screen,
+            current_line,
+            story_font,
+            panel_x,
+            y,
+            (230, 220, 180),
+            (0, 0, 0)
+        )
+
+        y += line_height
+
+
 running = True
 
 play_music("sounds/main_menu.ogg")
@@ -471,8 +645,26 @@ while running:
                     player_mask = pygame.mask.from_surface(player_image)
 
                     selected_hero = name
-                    game_state = STORY
-                    story_timer = pygame.time.get_ticks()
+                    hero_story_bg = pygame.image.load(
+                        resource_path(f"pics/{name.lower().replace(' ', '_')}_story.png")
+                    ).convert()
+
+                    hero_story_bg = pygame.transform.scale(hero_story_bg, (WIDTH, HEIGHT))
+
+                    game_state = HERO_STORY
+
+        if game_state == HERO_STORY and event.type == pygame.MOUSEBUTTONDOWN:
+
+            if hero_story_back_btn.collidepoint(event.pos):
+                game_state = HERO_SELECT
+
+            elif hero_story_play_btn.collidepoint(event.pos):
+                endless_mode = False
+                game_state = PLAYING
+
+            elif hero_story_endless_btn.collidepoint(event.pos):
+                endless_mode = True
+                game_state = PLAYING
 
         if game_state == GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
             if retry_btn.collidepoint(event.pos): reset_game(False)
@@ -537,6 +729,34 @@ while running:
         back_btn_bottom = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
         draw_gold_button(back_btn_bottom, "BACK")
 
+    if game_state == HERO_STORY:
+
+        screen.blit(hero_story_bg, (0, 0))
+
+        title = title_font.render(selected_hero, True, (255, 180, 60))
+
+        draw_text_outline(
+            screen,
+            selected_hero,
+            title_font,
+            420,
+            10,
+            (255, 180, 60),
+            (0, 0, 0)
+        )
+
+        draw_hero_story()
+
+        hero_story_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+        hero_story_play_btn = pygame.Rect(WIDTH - 300, HEIGHT - 80, 260, 45)
+        hero_story_endless_btn = pygame.Rect(40, HEIGHT - 80, 260, 45)
+
+        draw_gold_button(hero_story_back_btn, "BACK")
+        draw_gold_button(hero_story_play_btn, "PLAY")
+        draw_gold_button(hero_story_endless_btn, "ENDLESS")
+
+
+
 
     elif game_state in [PLAYING, GAME_OVER]:
         # --- Gameplay Logic ---
@@ -548,10 +768,24 @@ while running:
 
             hero_bg = hero_backgrounds.get(selected_hero)
 
-            if gold >= 12000 and game_state == PLAYING and not boss_defeated:
-                lives = 10
-                current_boss = CaveGuardians(screen, resource_path, rune_images, sounds, player, player_mask, player_image)
-                game_state = BOSS_FIGHT
+            # boss spawn logic
+            if gold >= 12000 and not current_boss and not endless_mode:
+
+                if not boss_defeated["cave_guardians"]:
+                    boss = CaveGuardians
+                elif not boss_defeated["lava_elemental"]:
+                    boss = LavaElemental
+                elif not boss_defeated["roshan"]:
+                    boss = Roshan
+
+                else:
+                    boss = None
+
+                if boss:
+                    player_speed = base_speed
+                    lives = max_lives
+                    current_boss = boss(screen, resource_path, rune_images, sounds, player, player_mask, player_image)
+                    game_state = BOSS_FIGHT
 
             if hero_bg:
                 screen.blit(hero_bg, (0, 0))
@@ -733,7 +967,12 @@ while running:
             if invisible and pygame.time.get_ticks() - invisible_timer > INVISIBLE_DURATION:
                 invisible = False
 
-            if lives <= 0: game_state = GAME_OVER
+            if lives <= 0:
+                if aegis:
+                    aegis = False
+                    lives = max_lives
+                else:
+                    game_state = GAME_OVER
 
             if damage_flash_alpha > 0:
                 damage_flash_alpha -= 15
@@ -839,7 +1078,11 @@ while running:
             invisible = False
 
         if lives <= 0:
-            game_state = GAME_OVER
+            if aegis:
+                aegis = False
+                lives = max_lives
+            else:
+                game_state = GAME_OVER
 
         keys = pygame.key.get_pressed()
 
@@ -940,13 +1183,21 @@ while running:
                 invisible_timer = pygame.time.get_ticks()
 
 
+
         elif result == "win":
-
+            defeated_boss = current_boss.name
             reset_game(False)
-            base_speed += 1
-            player_speed = base_speed
+            boss_defeated[defeated_boss] = True
 
-            boss_defeated = False
+            # boss bonuses
+            if defeated_boss == "cave_guardians":
+                base_speed += 1
+                player_speed = base_speed
+            elif defeated_boss == "lava_elemental":
+                max_lives += 2
+            elif defeated_boss == "roshan":
+                aegis = True
+
             current_boss = None
             game_state = PLAYING
 

@@ -17,6 +17,7 @@ class CaveGuardians:
         self.player = player
         self.player_mask = player_mask
         self.player_img = player_img
+        self.name = "cave_guardians"
 
         self.WIDTH = 1100
         self.HEIGHT = 750
@@ -57,6 +58,10 @@ class CaveGuardians:
 
         # UI
         self.floating_texts = []
+
+        # music
+        self.intro_music_played = False
+        self.outro_music_played = False
 
 
     def add_floating_text(self, text, x, y, color=(255, 255, 0)):
@@ -114,6 +119,10 @@ class CaveGuardians:
         self.screen.blit(self.cave_bg, (0, 0))
         self.screen.blit(self.overlay, (0, 0))
 
+        if not self.intro_music_played:
+            self.sounds["cave_entrance_intro"].play()
+            self.intro_music_played = True
+
         lines = [
             "The entrance to the cave stands before you.",
             "For centuries the Golden Rune has been hidden here.",
@@ -121,16 +130,19 @@ class CaveGuardians:
             "They will not step aside willingly."
         ]
 
-        start_y = self.HEIGHT // 2 - 80
+        start_y = self.HEIGHT // 2 - 140
+        line_spacing = 50
+        elapsed = pygame.time.get_ticks() - self.timer
         for i, text in enumerate(lines):
-            line_surface = self.font.render(text, True, (0, 0, 0))
-            text_x = self.WIDTH // 2 - line_surface.get_width() // 2
-            text_y = start_y + (i * 50)
+            if elapsed > i * 900:
+                line_surface = self.font.render(text, True, (255, 220, 150))
+                text_x = self.WIDTH // 2 - line_surface.get_width() // 2
+                text_y = start_y + (i * line_spacing)
 
-            self.draw_local_outline(text, text_x, text_y)
-            self.sounds["cave_entrance_intro"].play()
+                self.draw_local_outline(text, text_x, text_y)
 
-        if pygame.time.get_ticks() - self.timer > 4000:  # Increased to 4s so player can actually read it!
+
+        if pygame.time.get_ticks() - self.timer > 4500:  # Increased to 4s so player can actually read it!
             self.sounds["cave_entrance_intro"].stop()
             self.state = FIGHT
             self.last_attack_time = pygame.time.get_ticks()
@@ -283,6 +295,10 @@ class CaveGuardians:
         self.screen.blit(self.cave_bg, (0, 0))
         self.screen.blit(self.overlay, (0, 0))
 
+        if not self.outro_music_played:
+            self.sounds["boss_win"].play()
+            self.outro_music_played = True
+
         lines = [
             "The guardians fall.",
             "The path into the cave is now open.",
@@ -290,16 +306,19 @@ class CaveGuardians:
             "You are now alert for any danger! (+1 speed)"
         ]
 
-        start_y = self.HEIGHT // 2 - 80
+        start_y = self.HEIGHT // 2 - 100
+        line_spacing = 60
+        elapsed = pygame.time.get_ticks() - self.timer
         for i, text in enumerate(lines):
-            line_surface = self.font.render(text, True, (0, 0, 0))
-            text_x = self.WIDTH // 2 - line_surface.get_width() // 2
-            text_y = start_y + (i * 50)
+            if elapsed > i * 900:
+                line_surface = self.font.render(text, True, (255, 220, 150))
+                text_x = self.WIDTH // 2 - line_surface.get_width() // 2
+                text_y = start_y + (i * line_spacing)
 
-            self.draw_local_outline(text, text_x, text_y)
-            self.sounds["boss_win"].play()
+                self.draw_local_outline(text, text_x, text_y)
 
-        if pygame.time.get_ticks() - self.timer > 4000:
+
+        if pygame.time.get_ticks() - self.timer > 4500:
             self.sounds["boss_win"].stop()
             self.state = DONE
         return None
