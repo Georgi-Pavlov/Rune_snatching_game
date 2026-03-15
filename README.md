@@ -35,12 +35,14 @@ However, there are othe runes and traps:
 BOSS fight:
 
 
-After every 12k gold the boss stage is loaded. The first (and for now only) encaunter is with the cave entrance guardiance:
+After every 12k gold the boss stage is loaded. The first encaunter is with the cave entrance guardiance:
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/8be1cc1e-6e6d-4e03-860d-a00e444f7787" /> <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/b37298cc-0196-4ae4-8241-5f11d32ff0ca" />
 
 They will attack you one by one dealing 1hp and 2 hp of damage.
 
 When you catch gold or double damage rune, you will attack them for 1hp of damage. Every 4th consecutive rune will do critical hit on the boss.
+
+Then you will face the lava elemental - slow but hard hitting. And Roshan - agresive and sturdy.
 
 
 
