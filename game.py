@@ -209,6 +209,192 @@ HEROES = {
     "Witch Doctor": "pics/witch_doctor.png"
 }
 
+HEROES_STATS = {
+    "Zeus": {
+        "speed": 7,
+        "hp": 9,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "zeus_ult"
+    },
+    "Crystal Maiden": {
+        "speed": 6,
+        "hp": 8,
+        "normal_rune_multiplier": 1.1,
+        "dd_rune_multiplier": 1.1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "cm_ult"
+    },
+    "CM Persona": {
+        "speed": 6,
+        "hp": 8,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "cm_persona_ult",
+        "passive_effects": [
+        {"type": "miss_chance", "chance": 0.3}
+        ]
+    },
+    "Ancient Apparition": {
+        "speed": 6,
+        "hp": 9,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "ancient_ult",
+        "passive_effects": [
+        {"type": "rune_slow", "multiplier": 0.9}
+        ]
+    },
+    "Bristleback": {
+        "speed": 5,
+        "hp": 16,
+        "normal_rune_multiplier": 0.85,
+        "dd_rune_multiplier": 0.85,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "bristleback_ult"
+    },
+    "Dawnbreaker": {
+        "speed": 6,
+        "hp": 12,
+        "normal_rune_multiplier": 0.9,
+        "dd_rune_multiplier": 0.9,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "dawnbreaker_ult"
+    },
+    "Dazzle": {
+        "speed": 6,
+        "hp": 10,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "dazzle_ult"
+    },
+    "Drow Ranger": {
+        "speed": 7,
+        "hp": 10,
+        "normal_rune_multiplier": 1.15,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "drow_ult",
+        "on_hit_effects": [
+            {"type": "crit", "chance": 0.2, "value": 2}
+        ]
+    },
+    "Jakiro": {
+        "speed": 5,
+        "hp": 12,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 4,
+        "on_ultimate": "jakiro_ult",
+        "passive_effects": [
+        {"type": "normal_rune_hitbox", "hit_box": 1.2}
+        ]
+    },
+    "Lich": {
+        "speed": 6,
+        "hp": 10,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "lich_ult",
+        "on_hit_effects": [
+            {"type": "on_hit_execute", "gold_gain": 7}
+        ]
+    },
+    "Lina": {
+        "speed": 6,
+        "hp": 9,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 4,
+        "on_ultimate": "lina_ult",
+        "on_hit_effects": [
+            {"type": "scaling_speed", "per_gold": 100, "gain": 1, "max": 2}
+        ]
+    },
+    "Night Stalker": {
+        "speed": 9,
+        "hp": 10,
+        "normal_rune_multiplier": 0.85,
+        "dd_rune_multiplier": 0.85,
+        "boss_dmg": 1,
+        "ultimate_cost": 3,
+        "on_ultimate": "stalker_ult"
+    },
+    "Sniper": {
+        "speed": 6,
+        "hp": 8,
+        "normal_rune_multiplier": 1.15,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 4,
+        "on_ultimate": "sniper_ult",
+        "on_hit_effects": [
+            {"type": "crit", "chance": 0.15, "value": 2}
+        ]
+    },
+    "Undying": {
+        "speed": 5,
+        "hp": 18,
+        "normal_rune_multiplier": 0.8,
+        "dd_rune_multiplier": 0.8,
+        "boss_dmg": 2,
+        "ultimate_cost": 3,
+        "on_ultimate": "undying_ult"
+    },
+    "Viper": {
+        "speed": 5,
+        "hp": 10,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 4,
+        "on_ultimate": "viper_ult",
+        "on_hit_effects": [
+        {"type": "miss_chance", "chance": 0.3}
+        ]
+    },
+    "Warlock": {
+        "speed": 6,
+        "hp": 10,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1.7,
+        "boss_dmg": 1,
+        "ultimate_cost": 4,
+        "on_ultimate": "warlock_ult"
+    },
+    "Witch Doctor": {
+        "speed": 6,
+        "hp": 10,
+        "normal_rune_multiplier": 1,
+        "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
+        "ultimate_cost": 4,
+        "on_ultimate": "doctor_ult",
+        "on_rune_effects": [
+        {"type": "regen_boost", "value": 5}
+        ]
+    }
+}
+
+on_hit_effects = []
+passive_effects = []
+
 hero_backgrounds = {}
 
 for name in HEROES:
