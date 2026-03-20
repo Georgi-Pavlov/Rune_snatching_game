@@ -62,10 +62,11 @@ HERO_STORY = 2
 PLAYING = 3
 ENDLESS = 4
 HOW_TO_PLAY = 5
-STORY = 6
-GAME_OVER = 7
-BOSS_FIGHT = 8
-PAUSED = 9
+STATS = 6
+STORY = 7
+GAME_OVER = 8
+BOSS_FIGHT = 9
+PAUSED = 10
 game_state = MAIN_MENU
 
 story_lines = [
@@ -218,7 +219,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 1,
         "boss_dmg": 1,
         "ultimate_cost": 3,
-        "on_ultimate": "zeus_ult"
+        "on_ultimate": "zeus_ult",
+        "ability": "Thundergod: Higher base movement speed",
+        "ultimate": "Thundergod's Wrath: dmg: 3; charge: 3 consecutive runes. Next 2 attacks deal 2 dmg instead of 1"
     },
     "Crystal Maiden": {
         "speed": 6,
@@ -227,7 +230,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 1.1,
         "boss_dmg": 1,
         "ultimate_cost": 3,
-        "on_ultimate": "cm_ult"
+        "on_ultimate": "cm_ult",
+        "ability": "Arcane Aura: +10% gold from all runes",
+        "ultimate": "Freezing Field: dmg: 3; charge: 3 consecutive runes. Slows the boss attack for 6 sec"
     },
     "CM Persona": {
         "speed": 6,
@@ -239,7 +244,9 @@ HEROES_STATS = {
         "on_ultimate": "cm_persona_ult",
         "passive_effects": [
         {"type": "miss_chance", "chance": 0.3}
-        ]
+        ],
+        "ability": "Wolf's Agility: 30% chance creep attacks to miss",
+        "ultimate": "Frostbite: dmg: 3; charge: 3 consecutive runes. Immune to dmg from creeps for 5 sec"
     },
     "Ancient Apparition": {
         "speed": 6,
@@ -251,7 +258,9 @@ HEROES_STATS = {
         "on_ultimate": "ancient_ult",
         "passive_effects": [
         {"type": "rune_slow", "multiplier": 0.9}
-        ]
+        ],
+        "ability": "Chilling Touch: Runes fall 10% slower",
+        "ultimate": "Ice Blast: dmg: 3; charge: 3 consecutive runes. Freezes the boss for 2 sec"
     },
     "Bristleback": {
         "speed": 5,
@@ -260,7 +269,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 0.85,
         "boss_dmg": 1,
         "ultimate_cost": 3,
-        "on_ultimate": "bristleback_ult"
+        "on_ultimate": "bristleback_ult",
+        "ability": "Warpath: Very high HP but moves slowly and gets less gold (x0.85)",
+        "ultimate": "Quill Spray: dmg: 2; charge: 3 consecutive runes. Next 2 boss attacks do -50% dmg and the boss takes 1 dmg"
     },
     "Dawnbreaker": {
         "speed": 6,
@@ -269,7 +280,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 0.9,
         "boss_dmg": 1,
         "ultimate_cost": 3,
-        "on_ultimate": "dawnbreaker_ult"
+        "on_ultimate": "dawnbreaker_ult",
+        "ability": "Solar Guardian: Starts with a shield but get less gold (x0.9)",
+        "ultimate": "Starbreaker: dmg: 3; charge: 3 consecutive runes. Get shield for 5 sec"
     },
     "Dazzle": {
         "speed": 6,
@@ -278,7 +291,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 1,
         "boss_dmg": 1,
         "ultimate_cost": 3,
-        "on_ultimate": "dazzle_ult"
+        "on_ultimate": "dazzle_ult",
+        "ability": "Shallow Grave: First death resets HP to 1 instead",
+        "ultimate": "Bad Juju: dmg: 2; charge: 3 consecutive runes. Heal for 3 hp"
     },
     "Drow Ranger": {
         "speed": 7,
@@ -290,7 +305,9 @@ HEROES_STATS = {
         "on_ultimate": "drow_ult",
         "on_hit_effects": [
             {"type": "crit", "chance": 0.2, "value": 2}
-        ]
+        ],
+        "ability": "Precision: Gold runes are worth +15% gold; 20% chance to do 2 dmg",
+        "ultimate": "Marksmanship: dmg: 4; charge: 3 consecutive runes. Extra damage"
     },
     "Jakiro": {
         "speed": 5,
@@ -302,7 +319,9 @@ HEROES_STATS = {
         "on_ultimate": "jakiro_ult",
         "passive_effects": [
         {"type": "normal_rune_hitbox", "hit_box": 1.2}
-        ]
+        ],
+        "ability": "Dual Breath: normal runes have 20% bigger hitbox",
+        "ultimate": "Liquid Fire: dmg: 3; charge: 4 consecutive runes. The boss receive 1 gmd every 5 sec"
     },
     "Lich": {
         "speed": 6,
@@ -314,7 +333,9 @@ HEROES_STATS = {
         "on_ultimate": "lich_ult",
         "on_hit_effects": [
             {"type": "on_death", "gold_gain": 7}
-        ]
+        ],
+        "ability": "Sacrifice: Gain 7 gold every time a rune is missed",
+        "ultimate": "Chain Frost: dmg: 0; charge: 3 consecutive runes. Next 3 runes hit the boss for 2 dmg. If you miss a rune the ultimate stops"
     },
     "Lina": {
         "speed": 6,
@@ -326,7 +347,9 @@ HEROES_STATS = {
         "on_ultimate": "lina_ult",
         "on_hit_effects": [
             {"type": "scaling_speed", "per_gold": 100, "gain": 1, "max": 2}
-        ]
+        ],
+        "ability": "Fiery Soul: Speed increases as gold increases. Every 100 gold +1 speed for max of 2",
+        "ultimate": "Laguna Blade: dmg: 5; charge: 4 consecutive runes. Huge damage"
     },
     "Night Stalker": {
         "speed": 9,
@@ -335,7 +358,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 0.85,
         "boss_dmg": 1,
         "ultimate_cost": 3,
-        "on_ultimate": "stalker_ult"
+        "on_ultimate": "stalker_ult",
+        "ability": "Hunter in the Night: Extreme speed, low gold gain (x0.85)",
+        "ultimate": "Dark Ascension: dmg: 3; charge: 3 consecutive runes. For 6 sec you get +3 speed and no dmg from creeps"
     },
     "Sniper": {
         "speed": 6,
@@ -347,7 +372,9 @@ HEROES_STATS = {
         "on_ultimate": "sniper_ult",
         "on_hit_effects": [
             {"type": "crit", "chance": 0.15, "value": 2}
-        ]
+        ],
+        "ability": "Take Aim: Gold runes are worth +15% gold",
+        "ultimate": "Assassinate: dmg: 5; charge: 4 consecutive runes. Huge damage"
     },
     "Undying": {
         "speed": 5,
@@ -356,7 +383,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 0.8,
         "boss_dmg": 2,
         "ultimate_cost": 3,
-        "on_ultimate": "undying_ult"
+        "on_ultimate": "undying_ult",
+        "ability": "Flesh Golem: Highest HP, but very slow. Gets less gold (x0.8)",
+        "ultimate": "Soul Rip: dmg: 1; charge: 4 consecutive runes. Live drain - gain 1 hp per sec for 4 sec"
     },
     "Viper": {
         "speed": 5,
@@ -368,7 +397,9 @@ HEROES_STATS = {
         "on_ultimate": "viper_ult",
         "on_hit_effects": [
         {"type": "miss_chance", "chance": 0.3}
-        ]
+        ],
+        "ability": "Corrosive Skin: 30% chance the creep to die (does no dmg)",
+        "ultimate": "Viper Strike: dmg: 2; charge: 4 consecutive runes. The boss takes 1dmg per sec for 3 sec"
     },
     "Warlock": {
         "speed": 6,
@@ -377,7 +408,9 @@ HEROES_STATS = {
         "dd_rune_multiplier": 1.7,
         "boss_dmg": 1,
         "ultimate_cost": 4,
-        "on_ultimate": "warlock_ult"
+        "on_ultimate": "warlock_ult",
+        "ability": "Fatal Bonds: 1.7x Gold from Double Damage runes",
+        "ultimate": "Chaotic Offering: dmg: 2; charge: 4 consecutive runes. The boss takes +1dmg from all attacks for 4 sec"
     },
     "Witch Doctor": {
         "speed": 6,
@@ -389,7 +422,9 @@ HEROES_STATS = {
         "on_ultimate": "doctor_ult",
         "on_rune_effects": [
         {"type": "regen_boost", "value": 5}
-        ]
+        ],
+        "ability": "Voodoo Restoration: Regen runes heal for +5 HP.",
+        "ultimate": "Maledict: dmg: 0; charge: 4 consecutive runes. The boss takes 2 dmg per sec for 3 sec."
     }
 }
 
@@ -434,6 +469,11 @@ original_player_img = None
 # --- Asset loading ---
 frog_img = pygame.transform.scale(pygame.image.load(resource_path("pics/frog.png")), (150, 150))
 heart_img = pygame.transform.scale(pygame.image.load(resource_path("pics/heart.png")), (40, 40))
+hp_icon = pygame.transform.scale(pygame.image.load(resource_path("pics/heart.png")), (40, 40))
+dmg_icon = pygame.transform.scale(pygame.image.load(resource_path("pics/attack.png")), (40, 40))
+speed_icon = pygame.transform.scale(pygame.image.load(resource_path("pics/speed.png")), (40, 40))
+story_icon = pygame.transform.scale(pygame.image.load(resource_path("pics/hero_story.png")), (40, 40))
+
 
 rune_images = {
     "normal": pygame.transform.scale(pygame.image.load(resource_path("pics/runе.png")), (60, 60)),
@@ -490,7 +530,8 @@ for s in sounds.values():
 
 # --- Game Variables ---
 player = pygame.Rect(WIDTH // 2, HEIGHT - 190, 190, 190)
-player_speed = base_speed = 6
+player_speed = base_speed = modified_speed = 6
+max_speed = 12
 gold = 0
 lives = 10
 max_lives = 10
@@ -545,13 +586,19 @@ choose_hero_btn = pygame.Rect(WIDTH - 320, HEIGHT - 90, 260, 55)
 
 back_btn = pygame.Rect(40, 40, 120, 50)
 
-hero_story_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
-hero_story_play_btn = pygame.Rect(WIDTH - 300, HEIGHT - 80, 260, 45)
-hero_story_endless_btn = pygame.Rect(40, HEIGHT - 80, 260, 45)
+hero_stats_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+hero_stats_play_btn = pygame.Rect(WIDTH - 300, HEIGHT - 80, 260, 45)
+hero_stats_endless_btn = pygame.Rect(40, HEIGHT - 80, 260, 45)
+
+hero_story_btn = pygame.Rect(18, 75, 50, 50)
+story_icon_x = hero_story_btn.x + (hero_story_btn.width - story_icon.get_width()) // 2
+story_icon_y = hero_story_btn.y + (hero_story_btn.height - story_icon.get_height()) // 2
+
 
 continue_button = pygame.Rect(WIDTH//2 - 80, HEIGHT//2 - 30, 200, 50)
 menu_button = pygame.Rect(WIDTH//2 - 80, HEIGHT//2 + 30, 200, 50)
 
+hero_story_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
 
 def play_music(file):
     pygame.mixer.music.stop()
@@ -727,6 +774,103 @@ def draw_hero_story():
         )
 
         y += line_height
+
+
+def draw_multiline_text(surface, text, font, color, x, y, max_width):
+    words = text.split(' ')
+    lines = []
+    current_line = ""
+
+    for word in words:
+        test_line = current_line + word + " "
+        if font.size(test_line)[0] <= max_width:
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word + " "
+
+    lines.append(current_line)
+
+    for i, line in enumerate(lines):
+        line_surface = font.render(line.strip(), True, color)
+        surface.blit(line_surface, (x, y + i * 20))
+
+    return y + len(lines) * 20
+
+
+def draw_hero_stats_panel(surface, x, y, hero_stats):
+    panel_width = 450
+    panel_height = 300
+
+    # --- Panel background ---
+    panel = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
+    panel.fill((20, 15, 10, 200))  # тъмен полупрозрачен
+
+    # --- Gold border ---
+    pygame.draw.rect(panel, (200, 150, 80), panel.get_rect(), 2, border_radius=8)
+
+    #glow
+    glow = pygame.Surface((panel_width + 6, panel_height + 6), pygame.SRCALPHA)
+    pygame.draw.rect(glow, (255, 180, 60, 60), glow.get_rect(), border_radius=10)
+    surface.blit(glow, (x - 403, y - 63))
+
+    surface.blit(panel, (x - 400, y - 60))
+
+    # --- Fonts ---
+    label_font = pygame.font.SysFont(None, 26)
+    value_font = pygame.font.SysFont(None, 28, bold=True)
+
+    # --- Data ---
+    stats = [
+        (hp_icon, "Lives", hero_stats.get("hp", "-")),
+        (speed_icon, "Speed", hero_stats.get("speed", "-")),
+        (dmg_icon, "Damage", hero_stats.get("boss_dmg", "-")),
+    ]
+
+    start_y = y - 55
+
+    for i, (icon, label, value) in enumerate(stats):
+        row_y = start_y + i * 45
+
+        # Icon
+        surface.blit(icon, (x - 400, row_y))
+
+        # Label
+        label_surface = label_font.render(label, True, (220, 220, 220))
+        surface.blit(label_surface, (x - 400 + 65, row_y + 15))
+
+        # Value (дясно подравнен)
+        value_surface = value_font.render(str(value), True, (255, 180, 60))
+        surface.blit(value_surface, (
+            (x - 400) + panel_width - value_surface.get_width() - 15,
+            row_y + 15
+        ))
+
+        #divider
+        pygame.draw.line(
+            surface,
+            (80, 60, 30),
+            ((x - 400) + 10, row_y + 35),
+            ((x - 400) + panel_width - 10, row_y + 35),
+            3
+        )
+
+    # --- Ability & Ultimate ---
+    text_font = pygame.font.SysFont(None, 22)
+
+    text_x = (x - 400) + 10
+    text_y = start_y + len(stats) * 45 + 10
+    max_text_width = panel_width - 20
+
+    # Ability
+    ability_text = f"ABILITY| {hero_stats.get('ability', '-')}"
+    text_y = draw_multiline_text(surface, ability_text, text_font, (180, 200, 255), text_x, text_y, max_text_width)
+
+    text_y += 10  #spacing
+
+    # Ultimate
+    ultimate_text = f"ULTIMATE| {hero_stats.get('ultimate', '-')}"
+    draw_multiline_text(surface, ultimate_text, text_font, (255, 180, 120), text_x, text_y, max_text_width)
 
 
 def apply_on_hit_effects(hero_stats, context):
@@ -916,20 +1060,32 @@ while running:
 
                     hero_story_bg = pygame.transform.scale(hero_story_bg, (WIDTH, HEIGHT))
 
-                    game_state = HERO_STORY
+                    game_state = STATS
+
+        if game_state == STATS and event.type == pygame.MOUSEBUTTONDOWN:
+
+            if hero_stats_back_btn.collidepoint(event.pos):
+                game_state = HERO_SELECT
+
+            elif hero_stats_play_btn.collidepoint(event.pos):
+                endless_mode = False
+                if selected_hero == "Dawnbreaker":
+                    shield = True
+                game_state = PLAYING
+
+            elif hero_stats_endless_btn.collidepoint(event.pos):
+                endless_mode = True
+                if selected_hero == "Dawnbreaker":
+                    shield = True
+                game_state = PLAYING
+
+            elif hero_story_btn.collidepoint(event.pos):
+                game_state = HERO_STORY
 
         if game_state == HERO_STORY and event.type == pygame.MOUSEBUTTONDOWN:
 
             if hero_story_back_btn.collidepoint(event.pos):
-                game_state = HERO_SELECT
-
-            elif hero_story_play_btn.collidepoint(event.pos):
-                endless_mode = False
-                game_state = PLAYING
-
-            elif hero_story_endless_btn.collidepoint(event.pos):
-                endless_mode = True
-                game_state = PLAYING
+                game_state = STATS
 
         if game_state == GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
             if retry_btn.collidepoint(event.pos): reset_game(False)
@@ -994,6 +1150,37 @@ while running:
         back_btn_bottom = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
         draw_gold_button(back_btn_bottom, "BACK")
 
+    if game_state == STATS:
+
+        screen.blit(hero_story_bg, (0, 0))
+
+        title = title_font.render(selected_hero, True, (255, 180, 60))
+
+        draw_text_outline(
+            screen,
+            selected_hero,
+            title_font,
+            420,
+            10,
+            (255, 180, 60),
+            (0, 0, 0)
+        )
+
+        if selected_hero:
+            hero_stats = HEROES_STATS[selected_hero]
+            draw_hero_stats_panel(screen, WIDTH // 2 - 130, 180, hero_stats)
+
+        hero_stats_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+        hero_stats_play_btn = pygame.Rect(WIDTH - 300, HEIGHT - 80, 260, 45)
+        hero_stats_endless_btn = pygame.Rect(40, HEIGHT - 80, 260, 45)
+        hero_story_btn = pygame.Rect(18, 75, 50, 50)
+
+        draw_gold_button(hero_stats_back_btn, "BACK")
+        draw_gold_button(hero_stats_play_btn, "PLAY")
+        draw_gold_button(hero_stats_endless_btn, "ENDLESS")
+        screen.blit(story_icon, (story_icon_x, story_icon_y))
+
+
     if game_state == HERO_STORY:
 
         screen.blit(hero_story_bg, (0, 0))
@@ -1013,12 +1200,9 @@ while running:
         draw_hero_story()
 
         hero_story_back_btn = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
-        hero_story_play_btn = pygame.Rect(WIDTH - 300, HEIGHT - 80, 260, 45)
-        hero_story_endless_btn = pygame.Rect(40, HEIGHT - 80, 260, 45)
 
-        draw_gold_button(hero_story_back_btn, "BACK")
-        draw_gold_button(hero_story_play_btn, "PLAY")
-        draw_gold_button(hero_story_endless_btn, "ENDLESS")
+
+        draw_gold_button(hero_stats_back_btn, "BACK")
 
 
     if game_state == PAUSED:
@@ -1107,8 +1291,10 @@ while running:
                                 earned_gold = int(context["bonus_gold"] * multiplier * normal_multiplier)
                                 gold += earned_gold
 
-                                if base_speed + context["speed_bonus"] <= 11:
-                                    player_speed = base_speed + context["speed_bonus"]
+                                modified_speed = base_speed + context["speed_bonus"]
+
+                                if modified_speed <= max_speed:
+                                    player_speed = modified_speed
 
                                 sounds["pickup"].play()
                                 consecutive_runes += 1
@@ -1131,8 +1317,10 @@ while running:
                                 earned_gold = int(context["bonus_gold"] * multiplier * dd_multiplier)
                                 gold += earned_gold
 
-                                if base_speed + context["speed_bonus"] <= 11:
-                                    player_speed = base_speed + context["speed_bonus"]
+                                modified_speed = base_speed + context["speed_bonus"]
+
+                                if modified_speed <= max_speed:
+                                    player_speed = modified_speed
 
                                 sounds["pickup"].play()
                                 consecutive_runes += 1
@@ -1245,31 +1433,31 @@ while running:
 
                     if gold >= 300 and rune_speed == 3:
                         rune_speed += 1
-                        base_speed += 1
-                        player_speed = base_speed
 
                     if gold >= 700 and rune_speed == 4:
                         rune_speed += 1
-                        base_speed += 1
-                        player_speed = base_speed
+                        modified_speed += 1
+                        player_speed = modified_speed
 
                     if gold >= 1500 and rune_speed == 5:
                         rune_speed += 1
-                        base_speed += 1
-                        player_speed = base_speed
+                        modified_speed += 1
+                        player_speed = modified_speed
 
                     if gold >= 4000 and rune_speed == 6:
                         rune_speed += 1
-                        base_speed += 1
-                        player_speed = base_speed
+                        modified_speed += 1
+                        player_speed = modified_speed
 
                     if gold >= 7000 and rune_speed == 7:
                         rune_speed += 1
-                        base_speed += 1
-                        player_speed = base_speed
+                        modified_speed += 1
+                        player_speed = modified_speed
 
                     if gold >= 10000 and rune_speed == 8:
                         rune_speed += 1
+                        modified_speed += 1
+                        player_speed = modified_speed
 
                 # Timers
                 if haste_timer:
@@ -1517,8 +1705,8 @@ while running:
 
                 # boss bonuses
                 if defeated_boss == "cave_guardians":
-                    base_speed += 1
-                    player_speed = base_speed
+                    modified_speed += 1
+                    player_speed = modified_speed
                 elif defeated_boss == "lava_elemental":
                     max_lives += 2
                 elif defeated_boss == "roshan":
