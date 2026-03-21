@@ -457,10 +457,10 @@ hero_full = {}
 for name, path in HEROES.items():
     try:
         img = pygame.image.load(resource_path(path))
-        hero_icons[name] = pygame.transform.scale(img, (40, 40))
+        hero_icons[name] = pygame.transform.scale(img, (45, 45))
         hero_full[name] = pygame.transform.scale(img, (190, 190))
     except:
-        hero_icons[name] = pygame.Surface((40, 40))
+        hero_icons[name] = pygame.Surface((45, 45))
         hero_full[name] = pygame.Surface((190, 190))
 
 player_image = None
@@ -530,7 +530,8 @@ for s in sounds.values():
 
 # --- Game Variables ---
 player = pygame.Rect(WIDTH // 2, HEIGHT - 190, 190, 190)
-player_speed = base_speed = modified_speed = 6
+player_speed = base_speed = 0
+speed_increase = 0
 max_speed = 12
 gold = 0
 lives = 10
@@ -556,6 +557,8 @@ current_boss = None
 endless_mode = False
 aegis = False
 dazzle_grave_used = False
+boss_speed_bonus = 0
+in_boss_fight = False
 
 # boss defeated status
 boss_defeated = {
@@ -605,6 +608,38 @@ def play_music(file):
     pygame.mixer.music.load(resource_path(file))
     pygame.mixer.music.set_volume(0.4)
     pygame.mixer.music.play(-1)
+
+
+def calculate_speed():
+    speed = base_speed
+
+    # --- Boss mode ---
+    if in_boss_fight:
+        speed += boss_speed_bonus
+        return min(int(speed), max_speed)
+
+    # --- Normal gameplay ---
+
+    # Lina scaling
+    if selected_hero == "Lina":
+        stacks = min(gold // 100, 2)
+        speed += stacks
+
+    # Boss bonus (винаги важи)
+    speed += boss_speed_bonus
+
+    # Haste
+    if haste_timer:
+        speed *= 2
+
+    # Hex
+    if hex_timer:
+        speed *= 0.5
+
+    speed += speed_increase
+
+    return min(int(speed), max_speed)
+
 
 def update_multiplier():
     global multiplier
@@ -659,20 +694,32 @@ def spawn_rune():
 
 def reset_game(to_menu=False):
     global gold, lives, rune_speed, base_speed, player_speed, max_runes, runes, player_image, game_state, shield, \
-        invisible, multiplier, consecutive_runes, game_over_played, dazzle_grave_used
+        invisible, multiplier, consecutive_runes, game_over_played, dazzle_grave_used, current_boss, in_boss_fight, \
+        haste_timer, hex_timer, invisible_timer, speed_increase, boss_speed_bonus
     gold = 0
-    lives = 10
+    lives = HEROES_STATS[selected_hero]["hp"]
     rune_speed = 3
-    base_speed = 6
-    player_speed = 6
+    base_speed = HEROES_STATS[selected_hero]["speed"]
+    player_speed = base_speed
     max_runes = 1
-    shield = invisible = False
+    invisible = False
     player.x = WIDTH // 2
     runes = [spawn_rune()]
     multiplier = 1
     consecutive_runes = 0
     game_over_played = False
     dazzle_grave_used = False
+    current_boss = None
+    in_boss_fight = False
+    haste_timer = 0
+    hex_timer = 0
+    invisible_timer = 0
+    speed_increase = 0
+    boss_speed_bonus = 0
+    if selected_hero != "Dawnbreaker":
+        shield = False
+    else:
+        shield = True
     if to_menu:
         game_state = HERO_SELECT
     else:
@@ -1004,27 +1051,23 @@ while running:
                     game_state = MAIN_MENU
                     play_music("sounds/main_menu.ogg")
 
-            if continue_button.collidepoint(event.pos):
-                game_state = PLAYING
+            if game_state == PAUSED:
+                if continue_button.collidepoint(event.pos):
+                    game_state = PLAYING
 
-            elif menu_button.collidepoint(event.pos):
-                reset_game(True)
-                game_state = MAIN_MENU
+                elif menu_button.collidepoint(event.pos):
+                    reset_game(True)
+                    game_state = MAIN_MENU
 
 
         if game_state == HERO_SELECT and event.type == pygame.MOUSEBUTTONDOWN:
 
-            back_btn_bottom = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
-
-            if back_btn_bottom.collidepoint(event.pos):
-                game_state = MAIN_MENU
-                play_music("sounds/main_menu.ogg")
-
-            cols = 3
+            hero_clicked = False
+            cols = 4
 
             for i, name in enumerate(HEROES.keys()):
                 col, row = i % cols, i // cols
-                rect = pygame.Rect(100 + (col * 280), 140 + (row * 55), 260, 45)
+                rect = pygame.Rect(65 + (col * 250), 140 + (row * 55), 220, 50)
                 if rect.collidepoint(event.pos):
                     hero_stats = HEROES_STATS[name]
 
@@ -1060,7 +1103,20 @@ while running:
 
                     hero_story_bg = pygame.transform.scale(hero_story_bg, (WIDTH, HEIGHT))
 
+                    hero_clicked = True
+                    pygame.time.delay(150)
+
                     game_state = STATS
+
+                    pygame.event.clear(pygame.MOUSEBUTTONDOWN)
+                    break
+
+            if not hero_clicked:
+                back_btn_bottom = pygame.Rect(WIDTH // 2 - 130, HEIGHT - 80, 260, 45)
+
+                if back_btn_bottom.collidepoint(event.pos):
+                    game_state = MAIN_MENU
+                    play_music("sounds/main_menu.ogg")
 
         if game_state == STATS and event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -1088,8 +1144,14 @@ while running:
                 game_state = STATS
 
         if game_state == GAME_OVER and event.type == pygame.MOUSEBUTTONDOWN:
-            if retry_btn.collidepoint(event.pos): reset_game(False)
-            if menu_btn.collidepoint(event.pos): reset_game(True)
+            if retry_btn.collidepoint(event.pos):
+                reset_game(False)
+                pygame.event.clear(pygame.MOUSEBUTTONDOWN)
+                continue
+
+            if menu_btn.collidepoint(event.pos):
+                reset_game(True)
+                continue
 
     if game_state == HERO_SELECT:
         screen.blit(hero_select, (0, 0))
@@ -1100,7 +1162,7 @@ while running:
         screen.blit(shadow, (WIDTH // 2 - title.get_width() // 2 + 4, 44))
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 40))
 
-        cols = 3
+        cols = 4
 
         if random.random() < 0.2:
             spawn_ember()
@@ -1113,7 +1175,7 @@ while running:
 
         for i, name in enumerate(HEROES.keys()):
             col, row = i % cols, i // cols
-            btn_rect = pygame.Rect(100 + (col * 280), 140 + (row * 55), 260, 45)
+            btn_rect = pygame.Rect(65 + (col * 250), 140 + (row * 55), 220, 50)
 
             # Hero select buttons
             panel = pygame.Surface((btn_rect.width, btn_rect.height), pygame.SRCALPHA)
@@ -1153,6 +1215,10 @@ while running:
     if game_state == STATS:
 
         screen.blit(hero_story_bg, (0, 0))
+
+        if selected_hero:
+            hero_stats = HEROES_STATS[selected_hero]
+            draw_hero_stats_panel(screen, WIDTH // 2 - 130, 180, hero_stats)
 
         title = title_font.render(selected_hero, True, (255, 180, 60))
 
@@ -1221,8 +1287,17 @@ while running:
             if game_state == PLAYING:
                 sounds["hero_select"].stop()
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_LEFT] and player.left > 0: player.x -= player_speed
-                if keys[pygame.K_RIGHT] and player.right < WIDTH: player.x += player_speed
+
+                player_speed = calculate_speed()
+
+                if selected_hero != "Dawnbreaker":
+                    shield = False
+
+                if keys[pygame.K_LEFT] and player.left > 0:
+                    player.x -= player_speed
+
+                if keys[pygame.K_RIGHT] and player.right < WIDTH:
+                    player.x += player_speed
 
                 hero_bg = hero_backgrounds.get(selected_hero)
 
@@ -1240,7 +1315,7 @@ while running:
                         boss = None
 
                     if boss:
-                        player_speed = base_speed
+                        in_boss_fight = True
                         lives = max_lives
                         current_boss = boss(screen, resource_path, rune_images, sounds, player, player_mask, player_image)
                         game_state = BOSS_FIGHT
@@ -1250,15 +1325,17 @@ while running:
                 else:
                     screen.fill((30, 30, 40))
 
-                hero_stats = HEROES_STATS[selected_hero]
+                if selected_hero:
+                    hero_stats = HEROES_STATS[selected_hero]
 
                 for rune in runes[:]:
 
                     speed = rune_speed
 
-                    for effect in hero_stats.get("passive_effects", []):
-                        if effect["type"] == "rune_slow":
-                            speed *= effect["multiplier"]
+                    if selected_hero:
+                        for effect in hero_stats.get("passive_effects", []):
+                            if effect["type"] == "rune_slow":
+                                speed *= effect["multiplier"]
 
                     rune["rect"].y += speed
 
@@ -1291,11 +1368,6 @@ while running:
                                 earned_gold = int(context["bonus_gold"] * multiplier * normal_multiplier)
                                 gold += earned_gold
 
-                                modified_speed = base_speed + context["speed_bonus"]
-
-                                if modified_speed <= max_speed:
-                                    player_speed = modified_speed
-
                                 sounds["pickup"].play()
                                 consecutive_runes += 1
                                 update_multiplier()
@@ -1317,11 +1389,6 @@ while running:
                                 earned_gold = int(context["bonus_gold"] * multiplier * dd_multiplier)
                                 gold += earned_gold
 
-                                modified_speed = base_speed + context["speed_bonus"]
-
-                                if modified_speed <= max_speed:
-                                    player_speed = modified_speed
-
                                 sounds["pickup"].play()
                                 consecutive_runes += 1
                                 update_multiplier()
@@ -1330,7 +1397,6 @@ while running:
 
                             elif rtype == "haste":
                                 sounds["haste"].play()
-                                player_speed = base_speed * 2
                                 haste_timer = pygame.time.get_ticks()
 
                             elif rtype == "regen":
@@ -1368,7 +1434,6 @@ while running:
                                 sounds["hex"].play()
                                 consecutive_runes = 0
                                 update_multiplier()
-                                player_speed = base_speed // 2
                                 player_image = frog_img
                                 hex_timer = pygame.time.get_ticks()
 
@@ -1436,28 +1501,23 @@ while running:
 
                     if gold >= 700 and rune_speed == 4:
                         rune_speed += 1
-                        modified_speed += 1
-                        player_speed = modified_speed
+                        speed_increase += 1
 
                     if gold >= 1500 and rune_speed == 5:
                         rune_speed += 1
-                        modified_speed += 1
-                        player_speed = modified_speed
+                        speed_increase += 1
 
                     if gold >= 4000 and rune_speed == 6:
                         rune_speed += 1
-                        modified_speed += 1
-                        player_speed = modified_speed
+                        speed_increase += 1
 
                     if gold >= 7000 and rune_speed == 7:
                         rune_speed += 1
-                        modified_speed += 1
-                        player_speed = modified_speed
+                        speed_increase += 1
 
                     if gold >= 10000 and rune_speed == 8:
                         rune_speed += 1
-                        modified_speed += 1
-                        player_speed = modified_speed
+                        speed_increase += 1
 
                 # Timers
                 if haste_timer:
@@ -1600,6 +1660,8 @@ while running:
 
             keys = pygame.key.get_pressed()
 
+            player_speed = calculate_speed()
+
             if keys[pygame.K_LEFT] and player.left > 0:
                 player.x -= player_speed
 
@@ -1682,13 +1744,11 @@ while running:
                     lives = min(max_lives, lives + result["heal"])
 
                 if result["haste"]:
-                    player_speed = base_speed * 2
                     haste_timer = pygame.time.get_ticks()
 
                 if result["shield"]: shield = True
 
                 if result["hex"]:
-                    player_speed = base_speed // 2
                     player_image = frog_img
                     hex_timer = pygame.time.get_ticks()
 
@@ -1702,11 +1762,11 @@ while running:
                 defeated_boss = current_boss.name
                 reset_game(False)
                 boss_defeated[defeated_boss] = True
+                in_boss_fight = False
 
                 # boss bonuses
                 if defeated_boss == "cave_guardians":
-                    modified_speed += 1
-                    player_speed = modified_speed
+                    boss_speed_bonus += 1
                 elif defeated_boss == "lava_elemental":
                     max_lives += 2
                 elif defeated_boss == "roshan":
