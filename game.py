@@ -243,9 +243,9 @@ HEROES_STATS = {
         "ultimate_cost": 3,
         "on_ultimate": "cm_persona_ult",
         "passive_effects": [
-        {"type": "miss_chance", "chance": 0.3}
+        {"type": "miss_chance", "chance": 0.18}
         ],
-        "ability": "Wolf's Agility: 30% chance creep attacks to miss",
+        "ability": "Wolf's Agility: 18% chance creep attacks to miss",
         "ultimate": "Frostbite: dmg: 3; charge: 3 consecutive runes. Immune to dmg from creeps for 5 sec"
     },
     "Ancient Apparition": {
@@ -303,9 +303,6 @@ HEROES_STATS = {
         "boss_dmg": 1,
         "ultimate_cost": 3,
         "on_ultimate": "drow_ult",
-        "on_hit_effects": [
-            {"type": "crit", "chance": 0.2, "value": 2}
-        ],
         "ability": "Precision: Gold runes are worth +15% gold; 20% chance to do 2 dmg",
         "ultimate": "Marksmanship: dmg: 4; charge: 3 consecutive runes. Extra damage"
     },
@@ -370,10 +367,7 @@ HEROES_STATS = {
         "boss_dmg": 1,
         "ultimate_cost": 4,
         "on_ultimate": "sniper_ult",
-        "on_hit_effects": [
-            {"type": "crit", "chance": 0.15, "value": 2}
-        ],
-        "ability": "Take Aim: Gold runes are worth +15% gold",
+        "ability": "Take Aim: Gold runes are worth +15% gold; 15% chance to do 2 dmg",
         "ultimate": "Assassinate: dmg: 5; charge: 4 consecutive runes. Huge damage"
     },
     "Undying": {
@@ -395,10 +389,10 @@ HEROES_STATS = {
         "boss_dmg": 1,
         "ultimate_cost": 4,
         "on_ultimate": "viper_ult",
-        "on_hit_effects": [
-        {"type": "miss_chance", "chance": 0.3}
+        "passive_effects": [
+        {"type": "miss_chance", "chance": 0.18}
         ],
-        "ability": "Corrosive Skin: 30% chance the creep to die (does no dmg)",
+        "ability": "Corrosive Skin: 18% chance creep to die (does no dmg)",
         "ultimate": "Viper Strike: dmg: 2; charge: 4 consecutive runes. The boss takes 1dmg per sec for 3 sec"
     },
     "Warlock": {
@@ -559,6 +553,7 @@ aegis = False
 dazzle_grave_used = False
 boss_speed_bonus = 0
 in_boss_fight = False
+prev_state = None
 
 # boss defeated status
 boss_defeated = {
@@ -613,10 +608,8 @@ def play_music(file):
 def calculate_speed():
     speed = base_speed
 
-    # --- Boss mode ---
-    if in_boss_fight:
-        speed += boss_speed_bonus
-        return min(int(speed), max_speed)
+    # Boss bonus
+    speed += boss_speed_bonus
 
     # --- Normal gameplay ---
 
@@ -624,9 +617,6 @@ def calculate_speed():
     if selected_hero == "Lina":
         stacks = min(gold // 100, 2)
         speed += stacks
-
-    # Boss bonus (винаги важи)
-    speed += boss_speed_bonus
 
     # Haste
     if haste_timer:
@@ -679,23 +669,25 @@ def add_floating_text(text, x, y, color=(255, 255, 0)):
 
 def spawn_rune():
     rtype = random.choices(list(rune_weights.keys()), weights=rune_weights.values())[0]
-    rect = rune_images[rtype].get_rect()
-    rect.x, rect.y = random.randint(0, WIDTH - rect.width), -rect.height
     image = rune_images[rtype]
-    mask = pygame.mask.from_surface(image)
+    rect = image.get_rect()
+    rect.x, rect.y = random.randint(0, WIDTH - rect.width), -rect.height
 
-    return {
-        "type": rtype,
+    rune = {
+        "image": image,
+        "base_image": image.copy(),
         "rect": rect,
-        "mask": mask,
+        "mask": pygame.mask.from_surface(image),
+        "type": rtype,
         "modified": False
     }
+    return rune
 
 
 def reset_game(to_menu=False):
     global gold, lives, rune_speed, base_speed, player_speed, max_runes, runes, player_image, game_state, shield, \
         invisible, multiplier, consecutive_runes, game_over_played, dazzle_grave_used, current_boss, in_boss_fight, \
-        haste_timer, hex_timer, invisible_timer, speed_increase, boss_speed_bonus
+        haste_timer, hex_timer, invisible_timer, speed_increase, boss_speed_bonus, prev_state
     gold = 0
     lives = HEROES_STATS[selected_hero]["hp"]
     rune_speed = 3
@@ -711,16 +703,18 @@ def reset_game(to_menu=False):
     dazzle_grave_used = False
     current_boss = None
     in_boss_fight = False
+    prev_state = None
     haste_timer = 0
     hex_timer = 0
     invisible_timer = 0
     speed_increase = 0
     boss_speed_bonus = 0
-    if selected_hero != "Dawnbreaker":
-        shield = False
-    else:
+    if selected_hero == "Dawnbreaker":
         shield = True
+    else:
+        shield = False
     if to_menu:
+        shield = False
         game_state = HERO_SELECT
     else:
         player_image = original_player_img
@@ -939,17 +933,31 @@ def apply_on_hit_effects(hero_stats, context):
 
 def apply_passive_effects(hero_stats, rune):
     for effect in hero_stats.get("passive_effects", []):
+
         if effect["type"] == "miss_chance":
-            if random.random() < effect["chance"]:
-                return "miss"
+            if rune["type"] == "creep":
+                if random.random() < effect["chance"]:
+                    return "miss"
 
         elif effect["type"] == "normal_rune_hitbox":
-            if not rune["modified"]:
-                rune["rect"].inflate_ip(
-                    rune["rect"].width * (effect["hit_box"] - 1),
-                    rune["rect"].height * (effect["hit_box"] - 1)
-                )
-                rune["modified"] = True
+            if selected_hero == "Jakiro" and rune["type"] == "normal":
+
+                if not rune.get("modified", False):
+                    scale = effect["hit_box"]
+
+                    base_img = rune["base_image"]
+
+                    new_width = int(base_img.get_width() * scale)
+                    new_height = int(base_img.get_height() * scale)
+
+                    scaled_img = pygame.transform.scale(base_img, (new_width, new_height))
+
+                    old_center = rune["rect"].center
+                    rune["image"] = scaled_img
+                    rune["rect"] = scaled_img.get_rect(center=old_center)
+                    rune["mask"] = pygame.mask.from_surface(scaled_img)
+
+                    rune["modified"] = True
 
 
 def apply_rune_effects(hero_stats, rune_type, base_value):
@@ -1017,10 +1025,11 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                if game_state == PLAYING:
+                if game_state in (PLAYING, BOSS_FIGHT):
+                    prev_state = game_state
                     game_state = PAUSED
                 elif game_state == PAUSED:
-                    game_state = PLAYING
+                    game_state = prev_state
 
         if game_state == STORY and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -1053,7 +1062,7 @@ while running:
 
             if game_state == PAUSED:
                 if continue_button.collidepoint(event.pos):
-                    game_state = PLAYING
+                    game_state = prev_state
 
                 elif menu_button.collidepoint(event.pos):
                     reset_game(True)
@@ -1289,9 +1298,6 @@ while running:
                 keys = pygame.key.get_pressed()
 
                 player_speed = calculate_speed()
-
-                if selected_hero != "Dawnbreaker":
-                    shield = False
 
                 if keys[pygame.K_LEFT] and player.left > 0:
                     player.x -= player_speed
@@ -1557,7 +1563,7 @@ while running:
             offset_x = offset_y = 0
 
             for r in runes:
-                screen.blit(rune_images[r["type"]], r["rect"])
+                screen.blit(r["image"], r["rect"])
 
             if shake_timer > 0:
                 offset_x = random.randint(-shake_strength, shake_strength)
