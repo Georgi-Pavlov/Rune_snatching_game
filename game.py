@@ -217,9 +217,19 @@ HEROES_STATS = {
         "hp": 9,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "zeus_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 3},
+            "effect": {
+                "type": "attack_buff",
+                "attacks": 2,
+                "bonus_damage": 1
+            }
+        },
         "ability": "Thundergod: Higher base movement speed",
         "ultimate": "Thundergod's Wrath: dmg: 3; charge: 3 consecutive runes. Next 2 attacks deal 2 dmg instead of 1"
     },
@@ -228,9 +238,19 @@ HEROES_STATS = {
         "hp": 8,
         "normal_rune_multiplier": 1.1,
         "dd_rune_multiplier": 1.1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "cm_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 3},
+            "effect": {
+                "type": "boss_slow",
+                "duration": 6,
+                "attack_delay": 1.5
+            }
+        },
         "ability": "Arcane Aura: +10% gold from all runes",
         "ultimate": "Freezing Field: dmg: 3; charge: 3 consecutive runes. Slows the boss attack for 6 sec"
     },
@@ -239,13 +259,22 @@ HEROES_STATS = {
         "hp": 8,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "cm_persona_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 3},
+            "effect": {
+                "type": "creep_immunity",
+                "duration": 5
+            }
+        },
         "passive_effects": [
-        {"type": "miss_chance", "chance": 0.18}
+        {"type": "miss_chance", "chance": 0.2}
         ],
-        "ability": "Wolf's Agility: 18% chance creep attacks to miss",
+        "ability": "Wolf's Agility: 20% chance creep attacks to miss",
         "ultimate": "Frostbite: dmg: 3; charge: 3 consecutive runes. Immune to dmg from creeps for 5 sec"
     },
     "Ancient Apparition": {
@@ -253,23 +282,43 @@ HEROES_STATS = {
         "hp": 9,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "ancient_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 3},
+            "effect": {
+                "type": "freeze",
+                "duration": 3
+            }
+        },
         "passive_effects": [
         {"type": "rune_slow", "multiplier": 0.9}
         ],
         "ability": "Chilling Touch: Runes fall 10% slower",
-        "ultimate": "Ice Blast: dmg: 3; charge: 3 consecutive runes. Freezes the boss for 2 sec"
+        "ultimate": "Ice Blast: dmg: 3; charge: 3 consecutive runes. Freezes the boss for 3 sec"
     },
     "Bristleback": {
         "speed": 5,
         "hp": 16,
         "normal_rune_multiplier": 0.85,
         "dd_rune_multiplier": 0.85,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "bristleback_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 2},
+            "effect": {
+                "type": "boss_attack_nerf",
+                "attacks": 2,
+                "damage_multiplier": 0.5,
+                "reflect_damage": 1
+            }
+        },
         "ability": "Warpath: Very high HP but moves slowly and gets less gold (x0.85)",
         "ultimate": "Quill Spray: dmg: 2; charge: 3 consecutive runes. Next 2 boss attacks do -50% dmg and the boss takes 1 dmg"
     },
@@ -278,9 +327,18 @@ HEROES_STATS = {
         "hp": 12,
         "normal_rune_multiplier": 0.9,
         "dd_rune_multiplier": 0.9,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "dawnbreaker_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 3},
+            "effect": {
+                "type": "shield",
+                "duration": 5
+            }
+        },
         "ability": "Solar Guardian: Starts with a shield but get less gold (x0.9)",
         "ultimate": "Starbreaker: dmg: 3; charge: 3 consecutive runes. Get shield for 5 sec"
     },
@@ -289,9 +347,18 @@ HEROES_STATS = {
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "dazzle_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 2},
+            "effect": {
+                "type": "heal",
+                "value": 3
+            }
+        },
         "ability": "Shallow Grave: First death resets HP to 1 instead",
         "ultimate": "Bad Juju: dmg: 2; charge: 3 consecutive runes. Heal for 3 hp"
     },
@@ -300,9 +367,16 @@ HEROES_STATS = {
         "hp": 10,
         "normal_rune_multiplier": 1.15,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "crit",
+            "base": 1,
+            "chance": 0.2,
+            "crit": 2
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "drow_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 4}
+        },
         "ability": "Precision: Gold runes are worth +15% gold; 20% chance to do 2 dmg",
         "ultimate": "Marksmanship: dmg: 4; charge: 3 consecutive runes. Extra damage"
     },
@@ -311,37 +385,62 @@ HEROES_STATS = {
         "hp": 12,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 4,
-        "on_ultimate": "jakiro_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 2},
+            "effect": {
+                "type": "dot",
+                "duration": 4,
+                "tick_damage": 1
+            }
+        },
         "passive_effects": [
         {"type": "normal_rune_hitbox", "hit_box": 1.2}
         ],
         "ability": "Dual Breath: normal runes have 20% bigger hitbox",
-        "ultimate": "Liquid Fire: dmg: 3; charge: 4 consecutive runes. The boss receive 1 gmd every 5 sec"
+        "ultimate": "Liquid Fire: dmg: 2; charge: 4 consecutive runes. The boss receive 1 gmd per sec for 4 sec"
     },
     "Lich": {
         "speed": 6,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "lich_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 1},
+            "effect": {
+                "type": "attack_buff",
+                "attacks": 3,
+                "bonus_damage": 1
+            }
+        },
         "on_hit_effects": [
             {"type": "on_death", "gold_gain": 7}
         ],
         "ability": "Sacrifice: Gain 7 gold every time a rune is missed",
-        "ultimate": "Chain Frost: dmg: 0; charge: 3 consecutive runes. Next 3 runes hit the boss for 2 dmg. If you miss a rune the ultimate stops"
+        "ultimate": "Chain Frost: dmg: 1; charge: 3 consecutive runes. Next 3 runes hit the boss for 2 dmg."
     },
     "Lina": {
         "speed": 6,
         "hp": 9,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 4,
-        "on_ultimate": "lina_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 5}
+        },
         "on_hit_effects": [
             {"type": "scaling_speed", "per_gold": 100, "gain": 1, "max": 2}
         ],
@@ -353,9 +452,19 @@ HEROES_STATS = {
         "hp": 10,
         "normal_rune_multiplier": 0.85,
         "dd_rune_multiplier": 0.85,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "stalker_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 3},
+            "effect": {
+                "type": "creep_immunity",
+                "duration": 6,
+                "bonus_speed": 3
+            }
+        },
         "ability": "Hunter in the Night: Extreme speed, low gold gain (x0.85)",
         "ultimate": "Dark Ascension: dmg: 3; charge: 3 consecutive runes. For 6 sec you get +3 speed and no dmg from creeps"
     },
@@ -364,9 +473,16 @@ HEROES_STATS = {
         "hp": 8,
         "normal_rune_multiplier": 1.15,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "crit",
+            "base": 1,
+            "chance": 0.15,
+            "crit": 2
+        },
         "ultimate_cost": 4,
-        "on_ultimate": "sniper_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 5}
+        },
         "ability": "Take Aim: Gold runes are worth +15% gold; 15% chance to do 2 dmg",
         "ultimate": "Assassinate: dmg: 5; charge: 4 consecutive runes. Huge damage"
     },
@@ -375,9 +491,19 @@ HEROES_STATS = {
         "hp": 18,
         "normal_rune_multiplier": 0.8,
         "dd_rune_multiplier": 0.8,
-        "boss_dmg": 2,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 2
+        },
         "ultimate_cost": 3,
-        "on_ultimate": "undying_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 1},
+            "effect": {
+                "type": "lifedrain",
+                "duration": 4,
+                "heal_per_tick": 1
+            }
+        },
         "ability": "Flesh Golem: Highest HP, but very slow. Gets less gold (x0.8)",
         "ultimate": "Soul Rip: dmg: 1; charge: 4 consecutive runes. Live drain - gain 1 hp per sec for 4 sec"
     },
@@ -386,23 +512,43 @@ HEROES_STATS = {
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 4,
-        "on_ultimate": "viper_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 2},
+            "effect": {
+                "type": "dot",
+                "duration": 5,
+                "tick_damage": 1
+            }
+        },
         "passive_effects": [
-        {"type": "miss_chance", "chance": 0.18}
+        {"type": "miss_chance", "chance": 0.2}
         ],
-        "ability": "Corrosive Skin: 18% chance creep to die (does no dmg)",
-        "ultimate": "Viper Strike: dmg: 2; charge: 4 consecutive runes. The boss takes 1dmg per sec for 3 sec"
+        "ability": "Corrosive Skin: 20% chance creep to die (does no dmg)",
+        "ultimate": "Viper Strike: dmg: 2; charge: 4 consecutive runes. The boss takes 1dmg per sec for 5 sec"
     },
     "Warlock": {
         "speed": 6,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1.7,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 4,
-        "on_ultimate": "warlock_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 2},
+            "effect": {
+                "type": "damage_amp",
+                "duration": 4,
+                "bonus": 1
+            }
+        },
         "ability": "Fatal Bonds: 1.7x Gold from Double Damage runes",
         "ultimate": "Chaotic Offering: dmg: 2; charge: 4 consecutive runes. The boss takes +1dmg from all attacks for 4 sec"
     },
@@ -411,14 +557,24 @@ HEROES_STATS = {
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
-        "boss_dmg": 1,
+        "dmg_vs_boss": {
+            "type": "hit",
+            "value": 1
+        },
         "ultimate_cost": 4,
-        "on_ultimate": "doctor_ult",
+        "on_ultimate": {
+            "damage": {"type": "hit", "value": 1},
+            "effect": {
+                "type": "dot",
+                "duration": 3,
+                "tick_damage": 2
+            }
+        },
         "on_rune_effects": [
         {"type": "regen_boost", "value": 5}
         ],
         "ability": "Voodoo Restoration: Regen runes heal for +5 HP.",
-        "ultimate": "Maledict: dmg: 0; charge: 4 consecutive runes. The boss takes 2 dmg per sec for 3 sec."
+        "ultimate": "Maledict: dmg: 1; charge: 4 consecutive runes. The boss takes 2 dmg per sec for 3 sec."
     }
 }
 
@@ -935,9 +1091,7 @@ def apply_passive_effects(hero_stats, rune):
     for effect in hero_stats.get("passive_effects", []):
 
         if effect["type"] == "miss_chance":
-            if rune["type"] == "creep":
-                if random.random() < effect["chance"]:
-                    return "miss"
+            pass
 
         elif effect["type"] == "normal_rune_hitbox":
             if selected_hero == "Jakiro" and rune["type"] == "normal":
@@ -1088,7 +1242,7 @@ while running:
 
                     normal_multiplier = hero_stats["normal_rune_multiplier"]
                     dd_multiplier = hero_stats["dd_rune_multiplier"]
-                    boss_dmg = hero_stats["boss_dmg"]
+                    boss_dmg = hero_stats["dmg_vs_boss"]
 
                     on_hit_effects = hero_stats.get("on_hit_effects", [])
                     passive_effects = hero_stats.get("passive_effects", [])
@@ -1308,7 +1462,7 @@ while running:
                 hero_bg = hero_backgrounds.get(selected_hero)
 
                 # boss spawn logic
-                if gold >= 12000 and not current_boss and not endless_mode:
+                if gold >= 100 and not current_boss and not endless_mode:
 
                     if not boss_defeated["cave_guardians"]:
                         boss = CaveGuardians
@@ -1323,7 +1477,7 @@ while running:
                     if boss:
                         in_boss_fight = True
                         lives = max_lives
-                        current_boss = boss(screen, resource_path, rune_images, sounds, player, player_mask, player_image)
+                        current_boss = boss(screen, resource_path, rune_images, sounds, player, player_mask, player_image, hero_stats)
                         game_state = BOSS_FIGHT
 
                 if hero_bg:
@@ -1423,6 +1577,22 @@ while running:
 
 
                             elif rtype == "creep":
+
+                                missed = False
+
+                                for effect in hero_stats.get("passive_effects", []):
+                                    if effect["type"] == "miss_chance":
+                                        if random.random() < effect["chance"]:
+                                            missed = True
+                                            break
+
+                                if missed:
+                                    sounds["miss"].play()
+                                    add_floating_text("MISS", rune["rect"].centerx, rune["rect"].centery,
+                                                      (200, 200, 200))
+                                    runes.remove(rune)
+                                    continue
+
                                 if shield:
                                     sounds["block"].play()
                                     shield = False
