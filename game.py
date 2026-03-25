@@ -247,8 +247,8 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 3},
             "effect": {
                 "type": "boss_slow",
-                "duration": 6,
-                "attack_delay": 1.5
+                "duration": 6000,
+                "attack_delay": 1500
             }
         },
         "ability": "Arcane Aura: +10% gold from all runes",
@@ -268,7 +268,7 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 3},
             "effect": {
                 "type": "creep_immunity",
-                "duration": 5
+                "duration": 5000
             }
         },
         "passive_effects": [
@@ -291,14 +291,14 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 3},
             "effect": {
                 "type": "freeze",
-                "duration": 3
+                "duration": 2500
             }
         },
         "passive_effects": [
         {"type": "rune_slow", "multiplier": 0.9}
         ],
         "ability": "Chilling Touch: Runes fall 10% slower",
-        "ultimate": "Ice Blast: dmg: 3; charge: 3 consecutive runes. Freezes the boss for 3 sec"
+        "ultimate": "Ice Blast: dmg: 3; charge: 3 consecutive runes. Freezes the boss for 2,5 sec"
     },
     "Bristleback": {
         "speed": 5,
@@ -336,7 +336,8 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 3},
             "effect": {
                 "type": "shield",
-                "duration": 5
+                "subtype": "timed",
+                "duration": 5000
             }
         },
         "ability": "Solar Guardian: Starts with a shield but get less gold (x0.9)",
@@ -394,7 +395,8 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 2},
             "effect": {
                 "type": "dot",
-                "duration": 4,
+                "subtype": "burn",
+                "duration": 4000,
                 "tick_damage": 1
             }
         },
@@ -461,7 +463,7 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 3},
             "effect": {
                 "type": "creep_immunity",
-                "duration": 6,
+                "duration": 6000,
                 "bonus_speed": 3
             }
         },
@@ -500,7 +502,7 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 1},
             "effect": {
                 "type": "lifedrain",
-                "duration": 4,
+                "duration": 4000,
                 "heal_per_tick": 1
             }
         },
@@ -521,7 +523,8 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 2},
             "effect": {
                 "type": "dot",
-                "duration": 5,
+                "subtype": "poison",
+                "duration": 5000,
                 "tick_damage": 1
             }
         },
@@ -545,7 +548,7 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 2},
             "effect": {
                 "type": "damage_amp",
-                "duration": 4,
+                "duration": 4000,
                 "bonus": 1
             }
         },
@@ -566,7 +569,8 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 1},
             "effect": {
                 "type": "dot",
-                "duration": 3,
+                "subtype": "curse",
+                "duration": 3000,
                 "tick_damage": 2
             }
         },
@@ -1462,7 +1466,7 @@ while running:
                 hero_bg = hero_backgrounds.get(selected_hero)
 
                 # boss spawn logic
-                if gold >= 100 and not current_boss and not endless_mode:
+                if gold >= 12000 and not current_boss and not endless_mode:
 
                     if not boss_defeated["cave_guardians"]:
                         boss = CaveGuardians
