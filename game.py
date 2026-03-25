@@ -687,7 +687,7 @@ player = pygame.Rect(WIDTH // 2, HEIGHT - 190, 190, 190)
 player_speed = base_speed = 0
 speed_increase = 0
 max_speed = 12
-gold = 0
+gold = total_gold = 0
 lives = 10
 max_lives = 10
 max_runes = 1
@@ -1466,7 +1466,7 @@ while running:
                 hero_bg = hero_backgrounds.get(selected_hero)
 
                 # boss spawn logic
-                if gold >= 12000 and not current_boss and not endless_mode:
+                if gold >= 1000 and not current_boss and not endless_mode:
 
                     if not boss_defeated["cave_guardians"]:
                         boss = CaveGuardians
@@ -1531,6 +1531,7 @@ while running:
                                 apply_on_hit_effects(hero_stats, context)
                                 earned_gold = int(context["bonus_gold"] * multiplier * normal_multiplier)
                                 gold += earned_gold
+                                total_gold += earned_gold
 
                                 sounds["pickup"].play()
                                 consecutive_runes += 1
@@ -1552,6 +1553,7 @@ while running:
                                 apply_on_hit_effects(hero_stats, context)
                                 earned_gold = int(context["bonus_gold"] * multiplier * dd_multiplier)
                                 gold += earned_gold
+                                total_gold += earned_gold
 
                                 sounds["pickup"].play()
                                 consecutive_runes += 1
@@ -1754,7 +1756,7 @@ while running:
             fps = int(clock.get_fps())
             screen.blit(font.render(f"FPS: {fps}", True, (255, 255, 255)), (10, 70))
 
-            screen.blit(font.render(f"Gold: {gold}", True, (255, 255, 0)), (10, 10))
+            screen.blit(font.render(f"Gold: {total_gold}", True, (255, 255, 0)), (10, 10))
             screen.blit(heart_img, (WIDTH - 120, 10))
             pygame.draw.line(screen, (120, 120, 120), (WIDTH - 260, 55), (WIDTH - 0, 55), 1)
             screen.blit(font.render(str(lives), True, (255, 255, 255)), (WIDTH - 70, 18))
@@ -1850,7 +1852,7 @@ while running:
 
             result = current_boss.update()
 
-            screen.blit(font.render(f"Gold: {gold}", True, (255, 255, 0)), (10, 10))
+            screen.blit(font.render(f"Gold: {total_gold}", True, (255, 255, 0)), (10, 10))
             screen.blit(heart_img, (WIDTH - 120, 10))
             pygame.draw.line(screen, (120, 120, 120), (WIDTH - 260, 55), (WIDTH - 0, 55), 1)
             screen.blit(font.render(str(lives), True, (255, 255, 255)), (WIDTH - 70, 18))
