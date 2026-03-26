@@ -847,7 +847,7 @@ def spawn_rune():
 def reset_game(to_menu=False):
     global gold, lives, rune_speed, base_speed, player_speed, max_runes, runes, player_image, game_state, shield, \
         invisible, multiplier, consecutive_runes, game_over_played, dazzle_grave_used, current_boss, in_boss_fight, \
-        haste_timer, hex_timer, invisible_timer, speed_increase, boss_speed_bonus, prev_state
+        haste_timer, hex_timer, invisible_timer, speed_increase, boss_speed_bonus, prev_state, total_gold
     gold = 0
     lives = HEROES_STATS[selected_hero]["hp"]
     rune_speed = 3
@@ -1865,8 +1865,14 @@ while running:
             if damage_flash_alpha > 0:
                 screen.blit(damage_flash, (0, 0))
 
+            timed_shield = next((e for e in current_boss.game_state["effects"]
+                                 if e["type"] == "shield"), None)
+
+            has_timed_shield = timed_shield is not None
+            has_rune_shield = shield
+
             statuses = [
-                ("SHIELD", shield, None, 0),
+                ("SHIELD", has_timed_shield or has_rune_shield, timed_shield, 0),
                 ("INVIS", invisible, invisible_timer, INVISIBLE_DURATION),
                 ("HASTED", haste_timer != 0, haste_timer, 5000),
                 ("HEXED", hex_timer != 0, hex_timer, 5000)
@@ -1882,15 +1888,28 @@ while running:
                 text = status_font.render(name, True, color)
                 screen.blit(text, (start_x, y))
 
-                if active and timer:
-                    remaining = max(0, duration - (pygame.time.get_ticks() - timer))
-                    seconds = int(remaining / 1000)
+                if active:
 
-                    timer_text = status_font.render(str(seconds), True, (255, 200, 120))
-                    screen.blit(timer_text, (start_x + 10, y + 18))
+                    if name == "SHIELD":
+                        if has_timed_shield:
+                            remaining = max(0, timed_shield["expires_at"] - pygame.time.get_ticks())
+                            seconds = int(remaining / 1000)
 
-                    glow = status_font.render(name, True, (255, 180, 80))
-                    screen.blit(glow, (start_x, y))
+                            timer_text = status_font.render(str(seconds), True, (255, 200, 120))
+                            screen.blit(timer_text, (start_x + 10, y + 18))
+
+                        glow = status_font.render(name, True, (255, 180, 80))
+                        screen.blit(glow, (start_x, y))
+
+                    else:
+                        remaining = max(0, duration - (pygame.time.get_ticks() - timer))
+                        seconds = int(remaining / 1000)
+
+                        timer_text = status_font.render(str(seconds), True, (255, 200, 120))
+                        screen.blit(timer_text, (start_x + 10, y + 18))
+
+                        glow = status_font.render(name, True, (255, 180, 80))
+                        screen.blit(glow, (start_x, y))
 
                 start_x += 70
 

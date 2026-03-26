@@ -91,12 +91,14 @@ class CaveGuardians:
         mask = pygame.mask.from_surface(self.rune_images[rtype])
         return {"type": rtype, "rect": rect, "mask": mask}
 
+
     def draw_hp_bar(self, x, y, hp, max_hp):
         width = 120
         pygame.draw.rect(self.screen, (60, 0, 0), (x, y, width, 12))
         if hp > 0:
             fill_width = width * (hp / max_hp)
             pygame.draw.rect(self.screen, (220, 0, 0), (x, y, fill_width, 12))
+
 
     def update(self):
         """Returns a dictionary of events to the main game loop."""
@@ -153,6 +155,7 @@ class CaveGuardians:
 
         return dmg
 
+
     def get_ultimate_damage(self, dmg_cfg):
         if dmg_cfg["type"] == "hit":
             return dmg_cfg["value"]
@@ -186,6 +189,7 @@ class CaveGuardians:
                 return {"heal": effect["value"]}
             else:
                 self.game_state["effects"].append(e)
+
 
     def apply_damage_to_boss(self, dmg):
         target_x = self.guardian1_rect.centerx if self.guardian1_hp > 0 else self.guardian2_rect.centerx
@@ -227,6 +231,7 @@ class CaveGuardians:
                 if not effect.get("applied"):
                     effect["applied"] = True
                     self.add_floating_text("Shield Up!", self.player.x, self.player.y - 40, (100, 200, 255))
+                    self.sounds["shield"].play()
 
             # IMMUNE
             elif etype == "creep_immunity":
@@ -264,6 +269,29 @@ class CaveGuardians:
                 if etype == "boss_slow":
                     self.attack_interval -= effect["attack_delay"]
                 self.game_state["effects"].remove(effect)
+
+
+    def apply_damage_to_player(self, dmg):
+        # timed shield (Dawnbreaker)
+        timed_shield = next((e for e in self.game_state["effects"]
+                             if e["type"] == "shield" and e.get("subtype") == "timed"), None)
+
+        if any(e["type"] == "creep_immunity" for e in self.game_state["effects"]):
+            self.sounds["block"].play()
+            return 0
+
+        if timed_shield:
+            self.add_floating_text("Shielded!", self.player.x, self.player.y - 40, (100, 200, 255))
+            self.sounds["block"].play()
+            return 0
+
+        if self.player_rune_shield:
+            self.player_rune_shield = False
+            self.add_floating_text("Blocked!", self.player.x, self.player.y - 40, (100, 200, 255))
+            self.sounds["block"].play()
+            return 0
+
+        return dmg
 
 
     def update_intro(self):
@@ -318,12 +346,12 @@ class CaveGuardians:
 
             if self.attacker_turn == 1:
                 if self.guardian1_hp > 0:
-                    events["damage"] = 1
+                    events["damage"] = self.apply_damage_to_player(1)
                     self.g1_offset_y = 50  # Lunging down
                 self.attacker_turn = 2  # Switch turn
             else:
                 if self.guardian2_hp > 0:
-                    events["damage"] = 2
+                    events["damage"] = self.apply_damage_to_player(2)
                     self.g2_offset_y = 50  # Lunging down
                 self.attacker_turn = 1  # Switch turn
 
@@ -386,28 +414,15 @@ class CaveGuardians:
                 elif rtype == "hex":
                     events["hex"] = True
                     self.sounds["hex"].play()
-
                 elif rtype == "invisible":
                     events["invis"] = True
                     self.sounds["invisible"].play()
 
                 elif rtype == "creep":
-                    timed_shield = next((e for e in self.game_state["effects"]
-                                         if e["type"] == "shield" and e.get("subtype") == "timed"), None)
+                    dmg = self.apply_damage_to_player(1)
 
-                    if any(e["type"] == "creep_immunity" for e in self.game_state["effects"]):
-                        pass
-
-                    elif timed_shield:
-                        self.add_floating_text("Shielded!", self.player.x, self.player.y - 40, (100, 200, 255))
-                        # dont remove shield
-
-
-                    elif self.player_rune_shield:
-                        self.player_rune_shield = False
-                        self.add_floating_text("Blocked!", self.player.x, self.player.y - 40, (100, 200, 255))
-                    else:
-                        events["damage"] = 1
+                    if dmg:
+                        events["damage"] = dmg
                         self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
                         self.sounds["damage"].play()
 
@@ -415,9 +430,11 @@ class CaveGuardians:
 
             elif rune["rect"].top > self.HEIGHT:
                 if rune["type"] in ["normal", "dd"]:
-                    events["damage"] = 1
-                    self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
-                    self.sounds["damage"].play()
+                    dmg = self.apply_damage_to_player(1)
+                    if dmg:
+                        events["damage"] = dmg
+                        self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
+                        self.sounds["damage"].play()
 
                 self.runes.remove(rune)
 

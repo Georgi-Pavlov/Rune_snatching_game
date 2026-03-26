@@ -9,7 +9,7 @@ DONE = 3
 
 
 class LavaElemental:
-    def __init__(self, screen, resource_path, rune_images, sounds, player, player_mask, player_img):
+    def __init__(self, screen, resource_path, rune_images, sounds, player, player_mask, player_img, hero_stats):
         self.screen = screen
         self.resource_path = resource_path
         self.rune_images = rune_images
@@ -37,7 +37,6 @@ class LavaElemental:
         # Stats
         self.lava_elemental_hp = 40
         self.runes = []
-        self.runes_caught_for_attack = 0
         self.rune_speed = 7
         self.state = INTRO
         self.timer = pygame.time.get_ticks()
@@ -45,7 +44,7 @@ class LavaElemental:
 
         # Attack Logic Variables
         self.last_attack_time = pygame.time.get_ticks()
-        self.attack_interval = 5000  # Attacks every 5 seconds
+        self.attack_interval = self.base_attack_interval = 5000  # Attacks every 5 seconds
 
         # Animation Variables
         self.elemental_offset_y = 0
@@ -56,6 +55,15 @@ class LavaElemental:
         # music
         self.intro_music_played = False
         self.outro_music_played = False
+
+        # hero stats
+        self.hero_stats = hero_stats
+        self.game_state = {
+            "effects": [],
+            "player_buffs": [],
+            "ultimate_charges": 0
+        }
+        self.player_rune_shield = False
 
 
     def add_floating_text(self, text, x, y, color=(255, 255, 0)):
@@ -77,12 +85,14 @@ class LavaElemental:
         mask = pygame.mask.from_surface(self.rune_images[rtype])
         return {"type": rtype, "rect": rect, "mask": mask}
 
+
     def draw_hp_bar(self, x, y, hp, max_hp):
         width = 120
         pygame.draw.rect(self.screen, (60, 0, 0), (x, y, width, 12))
         if hp > 0:
             fill_width = width * (hp / max_hp)
             pygame.draw.rect(self.screen, (220, 0, 0), (x, y, fill_width, 12))
+
 
     def update(self):
         """Returns a dictionary of events to the main game loop."""
@@ -108,8 +118,175 @@ class LavaElemental:
         self.screen.blit(main_surf, (x, y))
 
 
-    def update_intro(self):
+    def get_player_damage(self):
+        dmg_config = self.hero_stats.get("dmg_vs_boss", {"type": "hit", "value": 1})
 
+        if dmg_config["type"] == "hit":
+            dmg = dmg_config["value"]
+
+        elif dmg_config["type"] == "crit":
+            import random
+            if random.random() < dmg_config["chance"]:
+                dmg = dmg_config["crit"]
+            else:
+                dmg = dmg_config["base"]
+
+        else:
+            dmg = 1
+
+        # buffs от ultimate
+        for buff in self.game_state["player_buffs"][:]:
+            if buff["type"] == "attack_buff":
+                dmg += buff["bonus_damage"]
+                buff["attacks"] -= 1
+
+                if buff["attacks"] <= 0:
+                    self.game_state["player_buffs"].remove(buff)
+
+        for effect in self.game_state["effects"]:
+            if effect["type"] == "damage_amp":
+                dmg += effect["bonus"]
+
+        return dmg
+
+
+    def get_ultimate_damage(self, dmg_cfg):
+        if dmg_cfg["type"] == "hit":
+            return dmg_cfg["value"]
+        return 0
+
+
+    def activate_ultimate(self):
+        ult = self.hero_stats.get("on_ultimate")
+
+        if not ult:
+            return
+
+        # DAMAGE
+        dmg_cfg = ult.get("damage")
+        if dmg_cfg:
+            dmg = self.get_ultimate_damage(dmg_cfg)
+            self.apply_damage_to_boss(dmg)
+
+        # EFFECT
+        effect = ult.get("effect")
+        if effect:
+            e = effect.copy()
+            now = pygame.time.get_ticks()
+            e["expires_at"] = now + effect.get("duration", 0)
+            e["last_tick"] = now
+
+            if e["type"] in ["attack_buff"]:
+                self.game_state["player_buffs"].append(e)
+            elif effect["type"] == "heal":
+                self.add_floating_text(f"+{effect['value']} HP", self.player.x, self.player.y - 40, (80, 255, 120))
+                return {"heal": effect["value"]}
+            else:
+                self.game_state["effects"].append(e)
+
+
+    def apply_damage_to_boss(self, dmg):
+        target_x = self.lava_elemental_rect.centerx
+
+        self.add_floating_text(f"-{dmg} HP", target_x, 100, (255, 100, 100))
+
+        if self.lava_elemental_hp > 0:
+            self.lava_elemental_hp -= dmg
+
+
+    def update_effects(self):
+        target_x = self.lava_elemental_rect.centerx
+        current_time = pygame.time.get_ticks()
+
+        for effect in self.game_state["effects"][:]:
+            etype = effect["type"]
+
+            # --- DAMAGE OVER TIME ---
+            if etype == "dot":
+                subtype = effect.get("subtype", "default")
+                if current_time - effect.get("last_tick", 0) > 1000:
+                    self.apply_damage_to_boss(effect["tick_damage"])
+
+                    if subtype == "poison":
+                        self.add_floating_text("Poison!", target_x, 120, (100, 255, 100))
+                    elif subtype == "burn":
+                        self.add_floating_text("Burning!", target_x, 120, (255, 80, 50))
+                    elif subtype == "curse":
+                        self.add_floating_text("Cursed!", target_x, 120, (180, 80, 255))
+                    else:
+                        self.add_floating_text(f"-{effect['tick_damage']}", target_x, 120)
+
+                    effect["last_tick"] = current_time
+
+            # SHIELD
+            elif etype == "shield":
+                if not effect.get("applied"):
+                    effect["applied"] = True
+                    self.add_floating_text("Shield Up!", self.player.x, self.player.y - 40, (100, 200, 255))
+                    self.sounds["shield"].play()
+
+            # IMMUNE
+            elif etype == "creep_immunity":
+                if not effect.get("applied"):
+                    effect["applied"] = True
+                    self.add_floating_text("Immune!", self.player.x, self.player.y - 40, (200, 200, 255))
+
+            # LIFEDRAIN
+            elif etype == "lifedrain":
+                if current_time - effect.get("last_tick", 0) > 1000:
+                    effect["last_tick"] = current_time
+
+                    # heal player
+                    self.add_floating_text("+1 HP", self.player.x, self.player.y - 40, (100, 255, 100))
+
+                    # damage boss
+                    self.apply_damage_to_boss(1)
+
+            # --- FREEZE ---
+            elif etype == "freeze":
+                if not effect.get("applied"):
+                    effect["applied"] = True
+                    self.add_floating_text("Frozen!", target_x, 60, (150, 200, 255))
+
+            # --- SLOW ---
+            elif etype == "boss_slow":
+                if not effect.get("applied"):
+                    total_slow = sum(e["attack_delay"] for e in self.game_state["effects"] if e["type"] == "boss_slow")
+                    self.attack_interval = self.base_attack_interval + total_slow
+                    effect["applied"] = True
+                    self.add_floating_text("Slowed!", target_x, 60, (150, 200, 255))
+
+            # --- EXPIRE ---
+            if current_time >= effect["expires_at"]:
+                if etype == "boss_slow":
+                    self.attack_interval -= effect["attack_delay"]
+                self.game_state["effects"].remove(effect)
+
+
+    def apply_damage_to_player(self, dmg):
+        # timed shield (Dawnbreaker)
+        timed_shield = next((e for e in self.game_state["effects"]
+                             if e["type"] == "shield" and e.get("subtype") == "timed"), None)
+
+        if any(e["type"] == "creep_immunity" for e in self.game_state["effects"]):
+            self.sounds["block"].play()
+            return 0
+
+        if timed_shield:
+            self.add_floating_text("Shielded!", self.player.x, self.player.y - 40, (100, 200, 255))
+            self.sounds["block"].play()
+            return 0
+
+        if self.player_rune_shield:
+            self.player_rune_shield = False
+            self.add_floating_text("Blocked!", self.player.x, self.player.y - 40, (100, 200, 255))
+            self.sounds["block"].play()
+            return 0
+
+        return dmg
+
+
+    def update_intro(self):
         self.screen.blit(self.lava_bg, (0, 0))
         self.screen.blit(self.overlay, (0, 0))
 
@@ -147,20 +324,35 @@ class LavaElemental:
         # Dictionary to send updates back to game.py
         events = {"damage": 0, "heal": 0, "haste": False, "shield": False, "hex": False, "invis": False}
 
+        self.update_effects()
+
         self.screen.blit(self.lava_bg, (0, 0))
 
         current_time = pygame.time.get_ticks()
 
         # --- Attack Timer Logic ---
-        if current_time - self.last_attack_time > self.attack_interval:
+        is_frozen = any(e["type"] == "freeze" for e in self.game_state["effects"])
+        if not is_frozen and current_time - self.last_attack_time > self.attack_interval:
             self.last_attack_time = current_time
 
             if self.lava_elemental_hp > 0:
-                events["damage"] = 4
+                events["damage"] = self.apply_damage_to_player(4)
                 self.elemental_offset_y = 50  # Lunging down
 
-        # Smoothly return Guardians to original position (Animation)
+        # Smoothly return to original position (Animation)
         if self.elemental_offset_y > 0: self.elemental_offset_y -= 2
+
+        # boss attack nerf and dmg return
+        for effect in self.game_state["effects"][:]:
+            if effect["type"] == "boss_attack_nerf":
+                events["damage"] *= effect["damage_multiplier"]
+
+                effect["attacks"] -= 1
+                if effect.get("reflect_damage", 0):
+                    self.apply_damage_to_boss(effect["reflect_damage"])
+
+                if effect["attacks"] <= 0:
+                    self.game_state["effects"].remove(effect)
 
         # Handle Runes
         for rune in self.runes:
@@ -175,27 +367,17 @@ class LavaElemental:
                 # Attack Logic
                 if rtype in ["normal", "dd"]:
                     self.sounds["cave_entrance_guardian"].play()
-                    self.runes_caught_for_attack += 1
+                    self.game_state["ultimate_charges"] += 1
 
-                    if self.runes_caught_for_attack % 4 == 0:
-                        dmg = 3
-                        # Add floating damage text over the boss
-                        dmg_text = f"-{dmg} HP"
-                        # Target lava elemental if he's alive
-                        if self.lava_elemental_hp > 0:
-                            target_x = self.lava_elemental_rect.centerx
-                            self.add_floating_text(dmg_text, target_x, 100, (255, 100, 100))
-                    else:
-                        dmg = 1
-                        # Add floating damage text over the boss
-                        dmg_text = f"-{dmg} HP"
-                        # Target lava elemental if he's alive
-                        if self.lava_elemental_hp > 0:
-                            target_x = self.lava_elemental_rect.centerx
-                            self.add_floating_text(dmg_text, target_x, 100, (255, 100, 100))
+                    if "ultimate_cost" in self.hero_stats and \
+                            self.game_state["ultimate_charges"] >= self.hero_stats["ultimate_cost"]:
+                        self.activate_ultimate()
+                        self.game_state["ultimate_charges"] = 0
 
-                    if self.lava_elemental_hp > 0:
-                        self.lava_elemental_hp -= dmg
+                    base_damage = self.get_player_damage()
+                    dmg = base_damage
+
+                    self.apply_damage_to_boss(dmg)
 
                 # Player Status Effects (Sent to game.py)
                 elif rtype == "haste":
@@ -210,30 +392,33 @@ class LavaElemental:
                     self.add_floating_text("+1 HP", self.player.x, self.player.y - 40, (80, 200, 255))
                     self.sounds["water"].play()
                 elif rtype == "shield":
-                    events["shield"] = True
+                    self.player_rune_shield = True
                     self.sounds["shield"].play()
                 elif rtype == "hex":
                     events["hex"] = True
                     self.sounds["hex"].play()
-                    self.runes_caught_for_attack = 0
                 elif rtype == "invisible":
                     events["invis"] = True
                     self.sounds["invisible"].play()
-                    self.runes_caught_for_attack = 0
+
                 elif rtype == "creep":
-                    events["damage"] = 1
-                    self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
-                    self.sounds["damage"].play()
-                    self.runes_caught_for_attack = 0
+                    dmg = self.apply_damage_to_player(1)
+
+                    if dmg:
+                        events["damage"] = dmg
+                        self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
+                        self.sounds["damage"].play()
 
                 self.runes.remove(rune)
 
             elif rune["rect"].top > self.HEIGHT:
                 if rune["type"] in ["normal", "dd"]:
-                    events["damage"] = 1
-                    self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
-                    self.sounds["damage"].play()
-                    self.runes_caught_for_attack = 0
+                    dmg = self.apply_damage_to_player(1)
+                    if dmg:
+                        events["damage"] = dmg
+                        self.add_floating_text("-1 HP", self.player.x, self.player.y - 40, (255, 50, 50))
+                        self.sounds["damage"].play()
+
                 self.runes.remove(rune)
 
         while len(self.runes) < 4:
