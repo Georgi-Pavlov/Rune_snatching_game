@@ -264,6 +264,12 @@ class CaveGuardians:
                     effect["applied"] = True
                     self.add_floating_text("Slowed!", target_x, 60, (150, 200, 255))
 
+            # Quilled
+            elif etype == "boss_attack_nerf":
+                if not effect.get("applied"):
+                    effect["applied"] = True
+                    self.add_floating_text("Quilled!", target_x, 80, (255, 200, 100))
+
             # --- EXPIRE ---
             if current_time >= effect["expires_at"]:
                 if etype == "boss_slow":
@@ -355,21 +361,26 @@ class CaveGuardians:
                     self.g2_offset_y = 50  # Lunging down
                 self.attacker_turn = 1  # Switch turn
 
+            # boss attack nerf and dmg return
+            dmg = events["damage"]
+
+            for effect in self.game_state["effects"][:]:
+                if effect["type"] == "boss_attack_nerf":
+                    dmg = max(1, int(dmg * effect["damage_multiplier"]))
+
+                    if effect.get("reflect_damage", 0):
+                        self.apply_damage_to_boss(effect["reflect_damage"])
+
+                    effect["attacks"] -= 1
+
+                    if effect["attacks"] <= 0:
+                        self.game_state["effects"].remove(effect)
+
+            events["damage"] = self.apply_damage_to_player(dmg)
+
         # Smoothly return Guardians to original position (Animation)
         if self.g1_offset_y > 0: self.g1_offset_y -= 2
         if self.g2_offset_y > 0: self.g2_offset_y -= 2
-
-        # boss attack nerf and dmg return
-        for effect in self.game_state["effects"][:]:
-            if effect["type"] == "boss_attack_nerf":
-                events["damage"] *= effect["damage_multiplier"]
-
-                effect["attacks"] -= 1
-                if effect.get("reflect_damage", 0):
-                    self.apply_damage_to_boss(effect["reflect_damage"])
-
-                if effect["attacks"] <= 0:
-                    self.game_state["effects"].remove(effect)
 
         # Handle Runes
         for rune in self.runes:

@@ -44,7 +44,7 @@ class LavaElemental:
 
         # Attack Logic Variables
         self.last_attack_time = pygame.time.get_ticks()
-        self.attack_interval = self.base_attack_interval = 5000  # Attacks every 5 seconds
+        self.attack_interval = self.base_attack_interval = 5500  # Attacks every 5.5 seconds
 
         # Animation Variables
         self.elemental_offset_y = 0
@@ -313,7 +313,7 @@ class LavaElemental:
 
                 self.draw_local_outline(text, text_x, text_y)
 
-        if pygame.time.get_ticks() - self.timer > 5500:  # Increased to 4s so player can actually read it!
+        if pygame.time.get_ticks() - self.timer > 5500:  # Increased to 5.5s so player can actually read it!
             self.sounds["lava_elemental_intro"].stop()
             self.state = FIGHT
             self.last_attack_time = pygame.time.get_ticks()

@@ -217,6 +217,7 @@ HEROES_STATS = {
         "hp": 9,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -231,13 +232,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Thundergod: Higher base movement speed",
-        "ultimate": "Thundergod's Wrath: dmg: 3; charge: 3 consecutive runes. Next 2 attacks deal 2 dmg instead of 1"
+        "ultimate": "Thundergod's Wrath: dmg: 3; charge: 3 runes. Next 2 attacks deal 2 dmg instead of 1"
     },
     "Crystal Maiden": {
         "speed": 6,
         "hp": 8,
         "normal_rune_multiplier": 1.1,
         "dd_rune_multiplier": 1.1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -252,13 +254,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Arcane Aura: +10% gold from all runes",
-        "ultimate": "Freezing Field: dmg: 3; charge: 3 consecutive runes. Slows the boss attack for 6 sec"
+        "ultimate": "Freezing Field: dmg: 3; charge: 3 runes. Slows the boss attack for 6 sec"
     },
     "CM Persona": {
         "speed": 6,
         "hp": 8,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -275,13 +278,14 @@ HEROES_STATS = {
         {"type": "miss_chance", "chance": 0.2}
         ],
         "ability": "Wolf's Agility: 20% chance creep attacks to miss",
-        "ultimate": "Frostbite: dmg: 3; charge: 3 consecutive runes. Immune to dmg from creeps for 5 sec"
+        "ultimate": "Frostbite: dmg: 3; charge: 3 runes. Immune to dmg from creeps for 5 sec"
     },
     "Ancient Apparition": {
         "speed": 6,
         "hp": 9,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -298,13 +302,14 @@ HEROES_STATS = {
         {"type": "rune_slow", "multiplier": 0.9}
         ],
         "ability": "Chilling Touch: Runes fall 10% slower",
-        "ultimate": "Ice Blast: dmg: 3; charge: 3 consecutive runes. Freezes the boss for 2,5 sec"
+        "ultimate": "Ice Blast: dmg: 3; charge: 3 runes. Freezes the boss for 2,5 sec"
     },
     "Bristleback": {
         "speed": 5,
         "hp": 16,
         "normal_rune_multiplier": 0.85,
         "dd_rune_multiplier": 0.85,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -314,19 +319,21 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 2},
             "effect": {
                 "type": "boss_attack_nerf",
+                "subtype": "quilled",
                 "attacks": 2,
                 "damage_multiplier": 0.5,
                 "reflect_damage": 1
             }
         },
         "ability": "Warpath: Very high HP but moves slowly and gets less gold (x0.85)",
-        "ultimate": "Quill Spray: dmg: 2; charge: 3 consecutive runes. Next 2 boss attacks do -50% dmg and the boss takes 1 dmg"
+        "ultimate": "Quill Spray: dmg: 2; charge: 3 runes. Next 2 boss attacks do -50% dmg and the boss takes 1 dmg"
     },
     "Dawnbreaker": {
         "speed": 6,
         "hp": 12,
         "normal_rune_multiplier": 0.9,
         "dd_rune_multiplier": 0.9,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -341,13 +348,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Solar Guardian: Starts with a shield but get less gold (x0.9)",
-        "ultimate": "Starbreaker: dmg: 3; charge: 3 consecutive runes. Get shield for 5 sec"
+        "ultimate": "Starbreaker: dmg: 3; charge: 3 runes. Get shield for 5 sec"
     },
     "Dazzle": {
         "speed": 6,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -361,13 +369,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Shallow Grave: First death resets HP to 1 instead",
-        "ultimate": "Bad Juju: dmg: 2; charge: 3 consecutive runes. Heal for 3 hp"
+        "ultimate": "Bad Juju: dmg: 2; charge: 3 runes. Heal for 3 hp"
     },
     "Drow Ranger": {
         "speed": 7,
         "hp": 10,
         "normal_rune_multiplier": 1.15,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "crit",
             "base": 1,
@@ -379,13 +388,14 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 4}
         },
         "ability": "Precision: Gold runes are worth +15% gold; 20% chance to do 2 dmg",
-        "ultimate": "Marksmanship: dmg: 4; charge: 3 consecutive runes. Extra damage"
+        "ultimate": "Marksmanship: dmg: 4; charge: 3 runes. Extra damage"
     },
     "Jakiro": {
         "speed": 5,
         "hp": 12,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -404,13 +414,14 @@ HEROES_STATS = {
         {"type": "normal_rune_hitbox", "hit_box": 1.2}
         ],
         "ability": "Dual Breath: normal runes have 20% bigger hitbox",
-        "ultimate": "Liquid Fire: dmg: 2; charge: 4 consecutive runes. The boss receive 1 gmd per sec for 4 sec"
+        "ultimate": "Liquid Fire: dmg: 2; charge: 4 runes. The boss receive 1 gmd per sec for 4 sec"
     },
     "Lich": {
         "speed": 6,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -428,13 +439,14 @@ HEROES_STATS = {
             {"type": "on_death", "gold_gain": 7}
         ],
         "ability": "Sacrifice: Gain 7 gold every time a rune is missed",
-        "ultimate": "Chain Frost: dmg: 1; charge: 3 consecutive runes. Next 3 runes hit the boss for 2 dmg."
+        "ultimate": "Chain Frost: dmg: 1; charge: 3 runes. Next 3 runes hit the boss for 2 dmg."
     },
     "Lina": {
         "speed": 6,
         "hp": 9,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -447,13 +459,14 @@ HEROES_STATS = {
             {"type": "scaling_speed", "per_gold": 100, "gain": 1, "max": 2}
         ],
         "ability": "Fiery Soul: Speed increases as gold increases. Every 100 gold +1 speed for max of 2",
-        "ultimate": "Laguna Blade: dmg: 5; charge: 4 consecutive runes. Huge damage"
+        "ultimate": "Laguna Blade: dmg: 5; charge: 4 runes. Huge damage"
     },
     "Night Stalker": {
         "speed": 9,
         "hp": 10,
         "normal_rune_multiplier": 0.85,
         "dd_rune_multiplier": 0.85,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -468,13 +481,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Hunter in the Night: Extreme speed, low gold gain (x0.85)",
-        "ultimate": "Dark Ascension: dmg: 3; charge: 3 consecutive runes. For 6 sec you get +3 speed and no dmg from creeps"
+        "ultimate": "Dark Ascension: dmg: 3; charge: 3 runes. For 6 sec you get +3 speed and no dmg from creeps"
     },
     "Sniper": {
         "speed": 6,
         "hp": 8,
         "normal_rune_multiplier": 1.15,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "crit",
             "base": 1,
@@ -486,13 +500,14 @@ HEROES_STATS = {
             "damage": {"type": "hit", "value": 5}
         },
         "ability": "Take Aim: Gold runes are worth +15% gold; 15% chance to do 2 dmg",
-        "ultimate": "Assassinate: dmg: 5; charge: 4 consecutive runes. Huge damage"
+        "ultimate": "Assassinate: dmg: 5; charge: 4 runes. Huge damage"
     },
     "Undying": {
         "speed": 5,
         "hp": 18,
         "normal_rune_multiplier": 0.8,
         "dd_rune_multiplier": 0.8,
+        "boss_dmg": 2,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 2
@@ -507,13 +522,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Flesh Golem: Highest HP, but very slow. Gets less gold (x0.8)",
-        "ultimate": "Soul Rip: dmg: 1; charge: 4 consecutive runes. Live drain - gain 1 hp per sec for 4 sec"
+        "ultimate": "Soul Rip: dmg: 1; charge: 4 runes. Live drain - gain 1 hp per sec for 4 sec"
     },
     "Viper": {
         "speed": 5,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -532,13 +548,14 @@ HEROES_STATS = {
         {"type": "miss_chance", "chance": 0.2}
         ],
         "ability": "Corrosive Skin: 20% chance creep to die (does no dmg)",
-        "ultimate": "Viper Strike: dmg: 2; charge: 4 consecutive runes. The boss takes 1dmg per sec for 5 sec"
+        "ultimate": "Viper Strike: dmg: 2; charge: 4 runes. The boss takes 1dmg per sec for 5 sec"
     },
     "Warlock": {
         "speed": 6,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1.7,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -553,13 +570,14 @@ HEROES_STATS = {
             }
         },
         "ability": "Fatal Bonds: 1.7x Gold from Double Damage runes",
-        "ultimate": "Chaotic Offering: dmg: 2; charge: 4 consecutive runes. The boss takes +1dmg from all attacks for 4 sec"
+        "ultimate": "Chaotic Offering: dmg: 2; charge: 4 runes. The boss takes +1dmg from all attacks for 4 sec"
     },
     "Witch Doctor": {
         "speed": 6,
         "hp": 10,
         "normal_rune_multiplier": 1,
         "dd_rune_multiplier": 1,
+        "boss_dmg": 1,
         "dmg_vs_boss": {
             "type": "hit",
             "value": 1
@@ -578,7 +596,7 @@ HEROES_STATS = {
         {"type": "regen_boost", "value": 5}
         ],
         "ability": "Voodoo Restoration: Regen runes heal for +5 HP.",
-        "ultimate": "Maledict: dmg: 1; charge: 4 consecutive runes. The boss takes 2 dmg per sec for 3 sec."
+        "ultimate": "Maledict: dmg: 1; charge: 4 runes. The boss takes 2 dmg per sec for 3 sec."
     }
 }
 
@@ -1246,7 +1264,7 @@ while running:
 
                     normal_multiplier = hero_stats["normal_rune_multiplier"]
                     dd_multiplier = hero_stats["dd_rune_multiplier"]
-                    boss_dmg = hero_stats["dmg_vs_boss"]
+                    boss_dmg = hero_stats["boss_dmg"]
 
                     on_hit_effects = hero_stats.get("on_hit_effects", [])
                     passive_effects = hero_stats.get("passive_effects", [])
@@ -1466,7 +1484,7 @@ while running:
                 hero_bg = hero_backgrounds.get(selected_hero)
 
                 # boss spawn logic
-                if gold >= 1000 and not current_boss and not endless_mode:
+                if gold >= 12000 and not current_boss and not endless_mode:
 
                     if not boss_defeated["cave_guardians"]:
                         boss = CaveGuardians
