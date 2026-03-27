@@ -436,7 +436,7 @@ HEROES_STATS = {
             }
         },
         "on_hit_effects": [
-            {"type": "on_death", "gold_gain": 7}
+            {"type": "missed_rune", "gold_gain": 7}
         ],
         "ability": "Sacrifice: Gain 7 gold every time a rune is missed",
         "ultimate": "Chain Frost: dmg: 1; charge: 3 runes. Next 3 runes hit the boss for 2 dmg."
@@ -1241,6 +1241,7 @@ while running:
                     game_state = prev_state
 
                 elif menu_button.collidepoint(event.pos):
+                    total_gold = 0
                     reset_game(True)
                     game_state = MAIN_MENU
 
@@ -1660,7 +1661,6 @@ while running:
                             continue
 
                     if rune["rect"].top > HEIGHT:
-
                         if rune["type"] in ["normal", "dd"]:
                             if shield:
                                 sounds["block"].play()
