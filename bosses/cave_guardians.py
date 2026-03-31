@@ -162,31 +162,32 @@ class CaveGuardians:
         return 0
 
 
-    def activate_ultimate(self):
+    def activate_ultimate(self, events):
         ult = self.hero_stats.get("on_ultimate")
 
         if not ult:
             return
 
-        # DAMAGE
+        # Instant damage
         dmg_cfg = ult.get("damage")
         if dmg_cfg:
             dmg = self.get_ultimate_damage(dmg_cfg)
             self.apply_damage_to_boss(dmg)
 
-        # EFFECT
+        # Apply Effects/Buffs
         effect = ult.get("effect")
         if effect:
             e = effect.copy()
             now = pygame.time.get_ticks()
             e["expires_at"] = now + effect.get("duration", 0)
             e["last_tick"] = now
+            e["applied"] = False
 
             if e["type"] in ["attack_buff"]:
                 self.game_state["player_buffs"].append(e)
             elif effect["type"] == "heal":
+                events["heal"] = e["value"]
                 self.add_floating_text(f"+{effect['value']} HP", self.player.x, self.player.y - 40, (80, 255, 120))
-                return {"heal": effect["value"]}
             else:
                 self.game_state["effects"].append(e)
 
@@ -238,6 +239,9 @@ class CaveGuardians:
                 if not effect.get("applied"):
                     effect["applied"] = True
                     self.add_floating_text("Immune!", self.player.x, self.player.y - 40, (200, 200, 255))
+                    if "bonus_speed" in effect:
+                        self.add_floating_text(f"+{effect['bonus_speed']} Speed!", self.player.x, self.player.y - 40,
+                                               (200, 200, 255))
 
             # LIFEDRAIN
             elif etype == "lifedrain":

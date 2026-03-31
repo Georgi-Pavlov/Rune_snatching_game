@@ -92,100 +92,115 @@ story_lines = [
 # hero stories
 hero_stories = {
     "Drow Ranger": [
-        "Dwelling deep within the forest and above the Glacier",
-        "few have ever caught a glimpse of the solitary and impossibly beautiful Drow Ranger.",
-        "Her presence was known only from the chill of frost arrows, driving deep into her enemies hearts.",
-        "Named and raised by the sympathetic Drow, Traxex draws on her heritage to deal with assailants who venture too close.",
-        "Honing her skill to peerless precision, the ranger's legendary marksmanship only improves with each passing skirmish."
+        "Traumatically orphaned as a child during a bandit raid, Traxex was adopted by the Drow.",
+        "She grew up masking her human features and mastering the Drow's signature art of stealth and archery,",
+        "eventually becoming more skilled than her mentors.",
+        "Despite her loyalty, she eventually realized she was not one of them and retreated into the deep woods to live in solitary exile.",
+        "Now a master of the Frost Arrows, she patrols the shadows as a cold, silent guardian of the forest.",
     ],
     "Bristleback": [
-        "The enforcer at a local pub, Rigwarl's never failed to collect a tab.",
-        "His thorny back deters attacks while peppering foes with constant barrages of quill sprays.",
-        "When it comes to a fight, he really puts his back into it."''
-        "With every volley Rigwarl works himself into a fury, adding rage to each blow"
+        "Rigwarl, known to the world as Bristleback, wasn't always a legendary brawler,",
+        "he started as an enforcer and 'debt collector' for the rowdiest taverns in the Slom underworld.",
+        "He earned his reputation by never backing down from a fight and using his literal thick skin to outlast even the strongest thugs.",
+        "The turning point in his story came when Rigwarl finally met his match in the face of Ymir, in a fight that lasted for hours and leveled an entire tavern.",
+        "Shamed and seeking a rematch, Rigwarl focused on honing his natural defenses and his signature quill spray."
     ],
     "Dawnbreaker": [
-        "To those who dared organize defiance, the Children of Light would dispatch Valora "
-        "and her hammer to show a measure of their power.",
-        "Dawnbreaker shines Luminosity in the heart of battle",
-        "happily shattering her enemies with her celestial hammer, the Brightmaul."
-        "Always waiting to tap her true cosmic power she is eager to rout her enemies on the battlefield no matter where they are."
+        "Valora was created by the Children of Light, an ancient race of celestial beings who sought to bring order and luminosity in the universe.",
+        "Using the purest metallic ores and the energy of a supernova, they constructed her to be the ultimate general of their 'shining host.'",
+        "They didn't just want a soldier: they wanted a symbol. For eons, Valora led the charge against the forces of chaos and darkness.",
+        "Until the Children of Light were betrayed. Without the guiding light of her creators,"
+        "Valora’s internal spark began to fade. She eventually drifted through the cosmos as a lifeless, golden statue."
     ],
     "Night Stalker": [
-        "The beast of bedtime tales, Balanar is the primal terror that every child knows to fear.",
-        "Once the sun goes down, Night Stalker's hunt begins.",
-        "Charging through the shadowy forests, he snares his prey, forcing all who see him to flee,",
-        "arms withering and spells fizzling as their hearts are stricken with Crippling Fear."
+        "Balanar belongs to a race of winged terrors that ruled the world during the 'First Night', a primordial era before the sun ever rose.",
+        "In this eternal darkness, his kind were the ultimate apex predators. They weren't just strong; they were gods of the shadows.",
+        "When the first sun finally ignited and brought light to the world, it was an extinction-level event for Balanar’s people.",
+        "The solar radiation wiped out his entire race in an instant—except for him.",
+        "Balanar is the sole survivor of that primordial era. He is a living relic of a time when the world was black, cold, and cruel."
     ],
     "Sniper": [
-        "With a single bullet, Kardel Sharpeye pierced the steep-stalker's central eye from the valley floor,",
-        "an ominous act that resulted in his ritual exile. He would win acclaim on a field of battle, or never return.",
-        "Like his mountain kin, the Sniper is one with his firearm.",
-        "No enemy is safe within the range of the Sniper's scope.",
-        "As he pauses to line up his cross-hairs, compensating for every variable before he Assassinates his mark in one fatal shot."
+        "All man among the Knollen, must complete a ritual test: they have to kill a cliff-steed from the valley floor with a single shot.",
+        "This is considered nearly impossible due to the distance and the wind. Kardel didn't just pass the test—he perfected it.",
+        "He fired a single bullet that went through the beast's eye and lodged in its skull.",
+        "According to their lore, the man who makes that perfect shot is destined for greatness, but his presence will bring disaster to the village.",
+        "Now he is an exile until he fulfills the rest of the prophecy - achieving legendary status on a global scale."
     ],
     "Undying": [
-        "Consumed by the chorus of the unending, Dirge, the Undying one marches across the land, rallying the dead to rise against the living.",
-        "He saps the strength from his enemies, and rip the souls from all close-by beings.",
-        "Monstrous and truly horrifying, Undying finds great pleasure in keeping himself alive and vital, while his adversaries suffer as he delivers death to the field."
+        "Eons ago, Dirge was a mortal man who was cast into a bottomless pit called the Abyss of No-God, a place where the physical laws of life and death were broken",
+        "For years, he suffered in total darkness, his body rotting away while his consciousness remained trapped inside.",
+        "While in the pit, he heard a sound that broke his mind: a low, humming vibration emitted by the Dead God, a being that hates all life."
+        "The song stripped away Dirge's name, his memories, and his humanity. He became a vessel—a 'bell' designed to ring out the Dead God's message."
     ],
     "Viper": [
-        "It was foolhardy to try and tame a Netherdrake, a lesson the old wizard learned in death.",
-        "Freed from his captor, Viper spread his wings and went forth to explore the surface world.",
-        "With his poison attacks imbued with virulent liquid, he is causing joints to harden, crippling foes whether they choose to flee or fight.",
-        "The Viper strike signals the beginning of the end. The afflicted victim staggers to a crawl, barely able to take its next step.",
-        "If the Netherdrake doesn't finish his targets off, the venom in their veins will."
+        "For years, Viper was the experimental subject of the sadistic wizard Pugna.",
+        "Pugna captured the young Netherdrake and used him as a living battery for dark sorcery."
+        "He expected Viper to be a mindless, beast that would obey his every command. But Viper wasn't just sitting in his cage,",
+        "he was absorbing the very necrotic magic Pugna used to torment him. He allowed his body to adapt to the most soul-crushing toxins and spells until he became",
+        "more poisonous than the environment itself. One day, Viper simply flew out of his confinement, melting stone and flesh alike."
     ],
     "Ancient Apparition": [
-        "Projected from the cold, infinite void, the Ancient Apparition known as Kaldr is but a faint image of his true self.",
-        "Nevertheless, his chilling touch is more than enough to make heroes quickly get cold feet",
-        "and before they know it, find themselves frozen in place.",
-        "All enemies have no choice but to retreat before their brittle bodies shatter to pieces..."
+        "Kaldr represents the inevitable end of everything—the Heat Death of the Universe.",
+        "He is the personification of absolute zero, the point where all molecular motion stops and the cosmos becomes a static, frozen void.",
+        "He doesn't exist fully in our physical dimension. What you see on the battlefield is just a faint image of his true self,"
+        "projected into our world from the cold depths of eternity. As the universe gets older and stars burn out, Kaldr actually gets stronger.",
+        "At the beginning of time, he was barely a whisper, but when the last sun dies, Kaldr will reign over a silent, frozen infinity."
     ],
     "Crystal Maiden": [
-        "Wherever Rylai went, the cold went with her.",
-        "Fields and orchards withered in her wake, leaving her parents no choice but to pack her off to Icewrack, a realm in the frigid north.",
-        "Under the tutelage of a hermit wizard, Rylai learned to imprison her enemies with a thick block of ice, holding them in place as she freezes the ground.",
-        "In the heat of battle, Rylai keeps a cool head. Channeling her elemental talents, the Crystal Maiden obliterates all foes foolish enough to remain in her freezing field."
+        "Rylai was born in a temperate realm, but she was a 'blight' to her parents from the start. Unlike her older sister Lina, who was a firebrand,",
+        "Rylai was born with an innate, uncontrollable connection to the cold. As a child, she didn't just play with snow—she accidentally froze her family's orchards,"
+        "turned the local springs to ice, and caused 'localized blizzards' just by throwing a tantrum.",
+        "Her parents, exhausted by their daughters' elemental chaos finally split them up and Rylai was banished to the Blueheart Glacier."
+        "In the frozen north, she was taken in by a powerful Ice Mage who lived in the Heart of the Glacier."
     ],
     "Dazzle": [
-        "A journey to the Nothl Realm changes all its visitors, not least of which Dazzle, a young acolyte of the Dezun Order.",
-        "Consecrated as a Shadow Priest, Dazzle sends outs shadow waves to mend and maim.",
-        "Foes are crippled by his paralytic enchantment while allies are blessed, cheating death no matter how severe their injuries.",
-        "Enemies within earshot of his incantations feel their bodies weaken, for those who cross Dazzle are invariably afflicted with an eternity of suffering."
+        "To become a high priest of the Dezun, a candidate must journey into the Nothl Realm. In this dimension, light is dark, healing is pain, and life is a form of death.",
+        "Most who enter either die or return completely insane. Dazzle, however, came back with a mastery over the 'shallow' side of the Nothl magic.",
+        "He doesn't actually 'heal' in the traditional sense: he uses Nothl energy to anchor the souls to the body, refusing to let it pass into the afterlife.",
+        "He essentially cheats death by holding a door shut that the universe wants to open."
     ],
     "Jakiro": [
-        "Most Pyrexae Dragons are hatched with one head, attuned to either ice or fire.",
-        "Then there was Jakiro, an accident of nature.",
-        "Possessing the might of both elements, the twin-headed dragon's dual breath freezes and burns simultaneously.",
-        "Gobs of liquid frost or liquid fire adhere to armor and walls, melting down steel and stone alike."
+        "Among the Pyrexae, eggs typically contain a single hatchling that embodies one element. When Jakiro’s egg cracked open, the brood-mother expected a monster",
+        "or a weakling that would quickly die. Instead, out came a dragon with two fully functional heads: one breathing liquid fire and the other glacial frost.",
+        "Rather than competing for resources and killing each other the two minds of Jakiro formed a perfect, symbiotic bond.",
+        "Because he is a 'freak', Jakiro doesn't belong to any specific dragon flight. He is a solitary predator who roams the skies."
     ],
     "Lich": [
-        "Resurrected by a curious geomancer, Ethreain bewitched his savior with a sinister gaze, then promptly made the man his newest sacrifice.",
-        "Finally freed from the depths of the Black Pool, the Lich returns to wreak icy destruction on the world.",
-        "Ethreain floats across the battlefield to blast any who cross him."
+        "In his mortal life, Ethreain was a terrifyingly powerful frostmage who kept entire kingdoms in a grip of icy terror.",
+        "Eventually, a group of brave mages managed to bind him in magically warded chains and cast him into the Black Pool of Nihal. This was a vertical abyss",
+        "of primordial ice magic intended to hold his soul forever. Ethreain didn't die. He spent several centuries slowly absorbing the power of the abyss until his soul became one with the cold.",
+        "Eventually a geomancer named Anhua broke the seals, and Ethreain rose as a Lich—a being of pure, undead frost."
     ],
     "Lina": [
-        "Like her younger sister, Lina's elemental affinity was the source of many headaches.",
-        "Sent south to live with a patient aunt, she learned to master her fiery soul in the blazing Desert of Misrule.",
-        "Attuned to fire, Lina ignites the ground, incinerating foes in a column of flame."
+        "Growing up alongside Rylai, Lina was the ultimate handful for her parents. While Rylai was accidentally freezing the garden,",
+        "Lina was setting the curtains on fire and melting the silverware just by being bored. She wasn't malicious: she just had 'too much spirit' for a temperate climate.",
+        "When their parents eventually decided to separate the two sisters Lina was sent south to the Desert of Misrule.",
+        "Far from being a punishment, the desert was a paradise for her. She thrived in the heat, mastering the ancient solar magics and eventually becoming the 'favored child' of the burning sun."
     ],
     "Warlock": [
-        "In the endless pursuit of rare texts, Demnok Lannik found it necessary to learn the magics",
-        "that would help him reach the most inaccessible tomes.",
-        "In short time, his obsessive study made him the most powerful Warlock in the academy.",
-        "He brings a chaotic offering and eldritch imps to every fight.",
-        "Not even an army can hold long against his dark spells and immolated golems."
+        "Demnok Lannik spent most of his life as the Chief Curator of the Ultimyr Academy’s archives. This academy houses the most dangerous, soul-crushing magical texts in existence.",
+        "There he was quietly transcribing forbidden scrolls, about Demonology and the Abyssal Language. Demnok eventually penned his own masterpiece, the Black Grimoire,",
+        "which allowed him to bypass the traditional, messy blood sacrifices usually required to summon creatures from the Outer Hells. He wasn't just able to summon a 'monster':",
+        "he riped a hole in reality and pulled down a Golem made of hellfire and obsidian."
     ],
     "Witch Doctor": [
-        "A bizarre figure shambles across the land, searching for any opportunity to apply the morbid arts of Prefectura Island.",
-        "To his allies, Zharvakko is a fountain of health, while to his foes he is the source of illness.",
-        "Notoriously known for cursing his adversaries and forcing them to relive the agony they will inevitably receive"
+        "Zharvakko didn't graduate from a fancy academy like Warlock or Crystal Maiden. He is a self-taught wanderer who spent his life trekking through the most dangerous jungles and marshes,",
+        "cataloging every toxic flower and glowing mushroom he found. He eventually mastered the balance between biomancy (healing) and necromancy (death), believing that life and rot are just two sides of the same coin.",
+        "His abilities aren't just 'magic': they are a wild, unpredictable science."
     ],
     "Zeus": [
-        "Charged with godly might emanating from his lightning hands Zeus calls down lightning bolts to smite his enemies.",
-        "None can hide from Zeus, pointing his arms skyward to bring divine punishment down on each and every foe.",
-        "Wherever they may be, none shall stand against the Thundergod's wrath."
+        "Hera finally snapped after Zeus’s countless affairs with mortals. She stripped him of his immortality and his throne, telling him that if he loved mortals so much, he should go live like one.",
+        "Zeus isn't exactly taking his 'retirement' gracefully. He’s currently fighting in the War of the Ancients for one reason: to prove he’s still got it.",
+        "He believes that if he can dominate the battlefield and prove his superiority, his wife will be impressed enough to let him back into the pantheon.",
+        "Even in a mortal shell, you can't fully suppress the God of Thunder."
+    ],
+    "CM Persona": [
+        "The legends speak of a primordial entity known as the wolf of Icewrack.",
+        "This wasn't just a beast, but the living soul of the Blueheart Glacier itself.",
+        "As the glacier began to recede and the ancient ice magic faded, the wolf grew weak and neared the end of its life cycle.",
+        "To ensure the survival of its lineage and the protection of the frozen wastes, the wolf sought a successor.",
+        "Rylai, already a master of ice magic, answered the call. Rather than simply befriending the beast,",
+        "she entered into a spiritual union with it."
     ]
 
 }
